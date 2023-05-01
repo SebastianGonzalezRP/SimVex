@@ -10,10 +10,9 @@ class Stop(Node):
         self.passengers_boarding_queue = None #Dictionary with the Route Label, and passengers queue
         self.bus_waiting_queue = None
 
-    def arriving_passanger(self,passenger):
+    def arriving_passenger(self,passenger):
         self.passengers.append(passenger)
 
     def leaving_passenger(self,passenger):
         self.passengers.remove(passenger)
         
-    def 
