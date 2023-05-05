@@ -6,3 +6,7 @@ class Passenger:
         self.origin = origin
         self.destiny = destiny
         self.position = None
+
+    
+
+    #TODO: Update class for it to build possible route option based on the origin and destiny attributes

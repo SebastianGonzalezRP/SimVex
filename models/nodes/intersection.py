@@ -10,10 +10,9 @@ class Intersection(Node):
         self.y_timer = 3
         self.r_timer = self.calculate_r_timer()
         self.current_timer_left = self.g_timer
-
+        
+        self.bus_waiting_queue = None
         self.break_signal = False
-
-        self.queue = None
 
     def calculate_g_timer(self):
         self.g_timer = self.cicle_duration * self.effective_green
@@ -38,15 +37,25 @@ class Intersection(Node):
 
     def update_timer(self,tick):
         if self.current_timer_left - tick <= 0:
+            time_remaining = tick - self.current_timer_left
             if self.semaphore == "G":
                 self.activate_y_light
             elif self.semaphore == "Y":
                 self.activate_r_light
             elif self.semaphore == "R":
                 self.activate_g_light
+            self.current_timer_left - time_remaining
         else:
             self.current_timer_left - tick
 
     def calculate_queue_length(self):
-        #TODO
-        pass
+        street_length = self.prev_node.length
+        #TODO: 20 meters as in the dimension of a bus + some clearance space
+        size = street_length // 20
+        self.bus_waiting_queue = [None for i in range(size - 1)]
+        
+
+    def last_occupied_queue_spot(self):
+        for i, item in reversed(list(enumerate(self.bus_waiting_queue))):
+            if item is not None:
+                return i
