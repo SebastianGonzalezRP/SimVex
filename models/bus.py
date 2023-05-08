@@ -1,4 +1,6 @@
 from models.nodes.stop import Stop
+from models.nodes.intersection import Intersection
+from models.nodes.street import Street
 from models.passenger import Passenger
 
 
@@ -14,16 +16,28 @@ class Bus:
         self.capacity = capacity
 
         self.next_stop = None
+        self.next_destination = None
         self.alighting_queue = self.generate_alighting_queue
         self.status = None #[Stationary, Accelerating, Decelerating, Cruising]
         self.speed = None # speed > 0 in m/s
         self.location = None #Node
         self.position = None  #Relative to Node/Location First Position is Node Start
 
-    def update_position(self, tick):
-        self.position += self.speed * tick
-        #TODO: Check end of street Node
+        self.breaking_point = None
 
+
+
+    def update_position(self, tick):
+        #A bus can only be "Stationary" at stops and intersections
+        #TODO:BIG TODO!!!!
+
+        if isinstance(self.next_destination,Stop):
+            pass
+        elif isinstance(self.next_destination,Intersection):
+
+            pass
+        else:
+            pass
 
     def update_speed(self, tick):
         if self.status == "Stationary":
@@ -43,9 +57,6 @@ class Bus:
         elif self.status == "Cruising":
             pass
 
-    def check_breaking_point(self):
-        #TODO
-        pass
 
     def assign_next_stop(self):
         current_node = self.location
@@ -83,4 +94,19 @@ class Bus:
 
     def disembark_passenger(self, passenger):
         self.passengers.remove(passenger)
+
+    def determine_next_stop(self):
+        #TODO
+        pass
+
+    def update_breaking_point(self):
+        breaking_distance = (self.speed**2)/(2*self.desc)
+        last_stationary_bus_position = self.next_destination.last_occupied_queue_spot()
+
+        #TODO: 20 meters as in the dimension of a bus + some clearance space
+        self.breaking_point = (breaking_distance + (20 * last_stationary_bus_position))
+
         
+    
+        
+    
