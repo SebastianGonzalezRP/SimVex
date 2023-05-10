@@ -12,6 +12,12 @@ node_container_config = {
     "Intersection":{}
 }
 
+def submit_nodes(self, nodes_list):
+    for node in nodes_list:
+        print(f"Node: {node}")
+        for element in node:
+            print(f"\tElement: {element}")
+
 def destroy_frame_children(frame):
     for child in frame.winfo_children():
         child.destroy()
@@ -25,8 +31,6 @@ def update_existing_node(self, node_container, node_type):
     elif node_type == "Intersection":
         load_intersection_node(self, node_container)
     pass
-
-
 
 def selector_change(self, node_selector):
         selection = node_selector.get()
@@ -50,13 +54,13 @@ def create_street_node(self,node_list):
     length_label = tk.Label(node_container, text="Street Length", bg=grey3)
     length_label.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
 
-    length_field = tk.Entry(node_container)
+    length_field = tk.Entry(node_container, textvariable="Length in Meters")
     length_field.grid(row=1, column=1, padx=5, pady=5, sticky='nsew')
 
     ntracks_label = tk.Label(node_container, text="Number of Tracks", bg=grey3)
     ntracks_label.grid(row=0, column=2, padx=5, pady=5, sticky='nsew')
 
-    number_spinbox = ttk.Spinbox(node_container, from_=1, to=2, textvariable=1)
+    number_spinbox = ttk.Spinbox(node_container, from_=2, to=2, textvariable=2)
     number_spinbox.grid(row=1, column=2, padx=5, pady=5, sticky='nsew')
 
 
@@ -85,7 +89,7 @@ def load_street_node(self,node_container):
     ntracks_label = tk.Label(node_container, text="Number of Tracks", bg=grey3)
     ntracks_label.grid(row=0, column=2, padx=5, pady=5, sticky='nsew')
 
-    number_spinbox = ttk.Spinbox(node_container, from_=1, to=2, textvariable=1)
+    number_spinbox = ttk.Spinbox(node_container, from_=2, to=2, textvariable=2)
     number_spinbox.grid(row=1, column=2, padx=5, pady=5, sticky='nsew')
 
 
@@ -106,7 +110,17 @@ def load_stop_node(self,node_container):
     node_selector.bind('<<ComboboxSelected>>', lambda event: selector_change(self, node_selector))
     node_selector.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
 
+    id_label = tk.Label(node_container, text="Stop ID", bg=grey3)
+    id_label.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
 
+    id_field = tk.Entry(node_container)
+    id_field.grid(row=1, column=1, padx=5, pady=5, sticky='nsew')
+
+    n_berths_label = tk.Label(node_container, text="Number of Berths", bg=grey3)
+    n_berths_label.grid(row=0, column=2, padx=5, pady=5, sticky='nsew')
+
+    number_spinbox = ttk.Spinbox(node_container, from_=1, to=3, textvariable=1)
+    number_spinbox.grid(row=1, column=2, padx=5, pady=5, sticky='nsew')
 
     node_container.columnconfigure(0, weight=1)
     node_container.columnconfigure(1, weight=1)
@@ -122,6 +136,17 @@ def load_intersection_node(self,node_container):
     node_selector.bind('<<ComboboxSelected>>', lambda event: selector_change(self, node_selector))
     node_selector.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
 
+    cicle_label = tk.Label(node_container, text="Cicle Duration (Seconds)", bg=grey3)
+    cicle_label.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
+
+    cicle_spinbox = ttk.Spinbox(node_container, from_=1, to=120, textvariable=60)
+    cicle_spinbox.grid(row=1, column=1, padx=5, pady=5, sticky='nsew')
+
+    effective_green_label = tk.Label(node_container, text="Effective Green (%)", bg=grey3)
+    effective_green_label.grid(row=0, column=2, padx=5, pady=5, sticky='nsew')
+
+    effective_green = ttk.Spinbox(node_container, from_=0, to=1, increment=0.01,  textvariable=0.5)
+    effective_green.grid(row=1, column=2, padx=5, pady=5, sticky='nsew')
 
     node_container.columnconfigure(0, weight=1)
     node_container.columnconfigure(1, weight=1)
@@ -177,10 +202,24 @@ class Application():
         node_creator_button = tk.Button(side_panel, text="Nodes Creator")
         node_creator_button.pack(side="top", pady=5, padx=5)
 
-        Stops_editor_button = tk.Button(side_panel, text="Stops Editor")
-        Stops_editor_button.pack(side="top", pady=5, padx=5)
+        route_creator_button = tk.Button(side_panel, text="Route Creator")
+        route_creator_button.config(state="disabled")
+        route_creator_button.pack(side="top", pady=5, padx=5)
+
+        stop_config_button = tk.Button(side_panel, text="Stop Configuration")
+        stop_config_button.config(state="disabled")
+        stop_config_button.pack(side="top", pady=5, padx=5)
+
+        route_configuration_button = tk.Button(side_panel, text="Route Configuration")
+        route_configuration_button.config(state="disabled")
+        route_configuration_button.pack(side="top", pady=5, padx=5)
+
+        passenger_configuration_button = tk.Button(side_panel, text="Passenger Configuration")
+        passenger_configuration_button.config(state="disabled")
+        passenger_configuration_button.pack(side="top", pady=5, padx=5)
 
         generate_button = tk.Button(side_panel, text="Generate Files")
+        generate_button.config(state="disabled")
         generate_button.pack(side="bottom", pady=5, padx=5)
 
         nodes_list = tk.Frame(main_panel)
@@ -188,7 +227,10 @@ class Application():
         generate_button = tk.Button(main_panel, text="Add Node",command=lambda: create_street_node(self, nodes_list))
         generate_button.pack(side="top", fill="x", pady=5, padx=5)   
 
-        nodes_list.pack(side='left', fill='both', expand=True, padx=5, pady=5)
+        nodes_list.pack(fill='both', expand=True, padx=5, pady=5)
+
+        submit_nodes_button = tk.Button(main_panel, text="Submit Nodes",command=lambda: submit_nodes(self, nodes_list))
+        submit_nodes_button.pack(side="bottom", fill="x", pady=5, padx=5)   
 
 
     def load_reuse(self):
