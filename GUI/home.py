@@ -10,14 +10,14 @@ grey4 = "#636363"
 window_width = 1280
 window_height = 800
 
-node_container_config = {
-    "Street": {},
-    "Stop": {},
-    "Intersection":{}
-}
-def node_parser(node_type, value1, value2):
-    return {node_type: {"value1": value1, "value2": value2}}
 
+def node_parser(node_type, value1, value2):
+    if node_type == "Street":
+        return {node_type: {"length": value1, "tracks": value2}}
+    elif node_type == "Stop":
+        return {node_type: {"id": value1, "berths": value2}}
+    elif node_type == "Intersection":
+        return {node_type: {"cicle": value1, "green": value2}}
 
 def submit_nodes(self, nodes_list):
     nodes = []
