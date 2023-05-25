@@ -1,24 +1,27 @@
 from models.nodes.node import Node
 
+YELLOW_TIMER_CONSTANT = 3
+
 class Intersection(Node):
-    def __init__(self,semaphore, cicle_duration, effective_green):
-        self.semaphore = semaphore #["G","Y","R"]
+    def __init__(self, cicle_duration, effective_green):
+        self.semaphore = 'G' #["G","Y","R"]
         self.cicle_duration = cicle_duration #Seconds
         self.effective_green = effective_green #Percentage (0,1) ej: 0.75
 
-        self.g_timer = self.calculate_g_timer()
-        self.y_timer = 3
-        self.r_timer = self.calculate_r_timer()
+        self.g_timer = None
+        self.y_timer = YELLOW_TIMER_CONSTANT
+        self.r_timer = None
+
+        self.calculate_timer()
         self.current_timer_left = self.g_timer
         
         self.bus_waiting_queue = None
         self.break_signal = False
 
-    def calculate_g_timer(self):
+    def calculate_timer(self):
         self.g_timer = self.cicle_duration * self.effective_green
+        self.r_timer = self.cicle_duration - self.g_timer - YELLOW_TIMER_CONSTANT
 
-    def calculate_r_timer(self):
-        self.r_timer = self.cicle_duration - self.g_timer - self.y_timer
 
     def activate_g_light(self):
         self.current_timer_left = self.g_timer
@@ -59,3 +62,13 @@ class Intersection(Node):
         for i, item in reversed(list(enumerate(self.bus_waiting_queue))):
             if item is not None:
                 return i
+            
+    def print_node(self):
+        print("======Intersection==========")
+        print(f"Semaphore Value: {self.semaphore}")
+        print(f"Cicle Duration in Seconds: {self.cicle_duration}")
+        print(f"Effective Green(%): {self.effective_green}")
+        print(f"Green Timer: {self.g_timer}")
+        print(f"Yellow Timer: {self.y_timer}")
+        print(f"Red Timer: {self.r_timer}")
+        print("======================")
