@@ -1,5 +1,6 @@
 from numpy import random
 import csv
+import os
 
 class Bus_Dispatcher():
     def __init__(self,generator_file):
@@ -55,15 +56,17 @@ class Bus_Dispatcher():
     def sort_file(self):
         self.to_file = sorted(self.to_file, key=lambda x: x[0])
 
-    def write_csv(self):
-        with open('bus_dispatcher_serial.csv', 'w', newline='') as csvfile:
+    def write_csv(self, serial):
+        if not os.path.exists(f'files/{serial}'):
+            os.makedirs(f'files/{serial}')
+        with open(f'files/{serial}/bus_dispatcher.csv', 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile)
                 for row in self.to_file:
                     writer.writerow(row)
 
-    def generate_dispatcher_file(self):
+    def generate_dispatcher_file(self,serial):
         self.get_bus_route_rates()
         self.get_bus_hyperparameter()
         self.generate_bus_arrival()
         self.sort_file()
-        self.write_csv()
+        self.write_csv(serial)
