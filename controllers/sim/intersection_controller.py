@@ -1,3 +1,3 @@
-class Passenger_controller:
+class Intersection_controller:
     def __init__(self):
         pass
