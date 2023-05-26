@@ -16,3 +16,9 @@ class Street(Node):
     def update_breaking_point(self):
         #TODO
         pass
+
+    def print_node(self):
+        print("======Street===========")
+        print(f"Tracks Numbers: {self.tracks}")
+        print(f"Street Length: {self.length}")
+        print("======================")

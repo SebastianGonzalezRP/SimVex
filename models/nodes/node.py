@@ -8,3 +8,9 @@ class Node:
 
     def assign_next_node(self, node):
         self.next_node = node
+
+    def print_node(self):
+        pass
+
+    def print_adjacent_nodes(self):
+        print(f"{self.prev_node}|{self}|{self.next_node}")

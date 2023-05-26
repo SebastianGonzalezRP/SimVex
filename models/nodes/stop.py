@@ -1,11 +1,11 @@
 from models.nodes.node import Node
 
 class Stop(Node):
-    def __init__(self,id,serving_routes,n_platform,passengers,passenger_limit):
+    def __init__(self,id,n_platform,):
         self.id = id
-        self.serving_routes = serving_routes
+        self.serving_routes = []
         self.n_platform = n_platform
-        self.passengers = passengers
+        self.passengers = []
 
         self.passengers_boarding_queue = None #Dictionary with the Route Label, and passengers queue
         self.bus_waiting_queue = None
@@ -41,6 +41,11 @@ class Stop(Node):
             if item is not None:
                 return i
 
+    def print_node(self):
+        print("========STOP=========")
+        print(f"Stop ID: {self.id}")
+        print(f"Berth Numbers: {self.n_platform}")
+        print("======================")
 
 
         

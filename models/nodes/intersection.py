@@ -19,7 +19,7 @@ class Intersection(Node):
         self.break_signal = False
 
     def calculate_timer(self):
-        self.g_timer = self.cicle_duration * self.effective_green
+        self.g_timer = round(self.cicle_duration * self.effective_green)
         self.r_timer = self.cicle_duration - self.g_timer - YELLOW_TIMER_CONSTANT
 
 
