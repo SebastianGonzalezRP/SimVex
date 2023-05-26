@@ -17,7 +17,7 @@ class Bus:
 
         self.next_stop = None
         self.next_destination = None
-        self.alighting_queue = self.generate_alighting_queue
+        self.alighting_queue = self.generate_alighting_queue()
         self.status = None #[Stationary, Accelerating, Decelerating, Cruising]
         self.speed = None # speed > 0 in m/s
         self.location = None #Node
