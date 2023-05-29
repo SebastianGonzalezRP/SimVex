@@ -2,6 +2,8 @@ from numpy import random
 import csv
 import os
 
+#PASSENGER:  [t_in, ID, origin, destiny, route,  boarding_t, alighting_t]
+
 class Passenger_Dispatcher():
     def __init__(self,generator_file):
         self.file = generator_file
