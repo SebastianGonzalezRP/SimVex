@@ -1,6 +1,7 @@
 from models.nodes.node import Node
 
 YELLOW_TIMER_CONSTANT = 3
+BUS_DIMENSION = 15
 
 class Intersection(Node):
     def __init__(self, cicle_duration, effective_green):
@@ -53,8 +54,8 @@ class Intersection(Node):
 
     def calculate_queue_length(self):
         street_length = self.prev_node.length
-        #TODO: 20 meters as in the dimension of a bus + some clearance space
-        size = street_length // 20
+        #TODO: BUS_DIMENSION meters as in the dimension of a bus + some clearance space
+        size = street_length // BUS_DIMENSION
         self.bus_waiting_queue = [None for i in range(size - 1)]
         
 

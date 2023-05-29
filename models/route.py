@@ -1,5 +1,4 @@
 class Route:
-    def __init__ (self,id,route_stops,route_sequence):
+    def __init__ (self,id,serving_stops):
         self.id = id
-        self.route_stops = route_stops
-        self.route_sequence = route_sequence
+        self.serving_stops = serving_stops

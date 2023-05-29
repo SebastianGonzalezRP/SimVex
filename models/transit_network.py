@@ -30,6 +30,3 @@ class TransitNetwork():
         nodes.append(end)
         return nodes
             
-            
-
-
