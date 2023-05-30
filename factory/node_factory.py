@@ -8,7 +8,6 @@ from models.nodes.end import End
 def node_generator(node):
     new_node = Node()
     node_type = list(node)[0]
-    print(node_type)
     if node_type == 'Street':
         new_node = Street(length=node[node_type]["length"],
                           tracks=node[node_type]["tracks"])

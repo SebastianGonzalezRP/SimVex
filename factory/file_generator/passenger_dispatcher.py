@@ -1,32 +1,34 @@
-from numpy import random
 from factory.file_generator.utils import *
+from factory.file_generator.dispatcher import Dispatcher
 
 
 #PASSENGER:  [t_in, origin, destiny, route,  boarding_t, alighting_t]
 
-class Passenger_Dispatcher():
+class Passenger_Dispatcher(Dispatcher):
     def __init__(self,generator_file):
-        self.file = generator_file
-        self.duration = generator_file["Time"]["Duration"]
+        super().__init__(generator_file)
+
         self.route_stop_passenger_rate = []
         self.bus_dispatch_rate = {}
         self.passenger_hyperparameter = []
         self.to_file = []
 
     def get_passenger_route_rates(self):
-        for route_key, route_val in self.file['Route'].items():
+        for route_key, route_val in self.generator['Route'].items():
             for stop_key, stop_val in route_val['stops'].items():
                 passenger_rate_info = stop_val['passenger_rate']
                 self.route_stop_passenger_rate.append([route_key, stop_key, passenger_rate_info])
 
     def get_passenger_hyperparameter(self):
-        self.passenger_hyperparameter.append(self.file['Passenger']['boarding_time_dist'])
-        self.passenger_hyperparameter.append(self.file['Passenger']['alighting_time_dist'])
+        self.passenger_hyperparameter.append(self.generator['Passenger']['boarding_time_dist'])
+        self.passenger_hyperparameter.append(self.generator['Passenger']['alighting_time_dist'])
 
     def get_possible_destinations(self,route,origin):
-        possible_destinations = list(self.file["Route"][route]["stops"].keys())
+        possible_destinations = []
+        for _route in self.routes:
+            if _route.id == route:
+                possible_destinations = _route.get_remaining_stops_id(origin)
         possible_destinations.append("end")
-        possible_destinations= [stop for stop in possible_destinations if stop != origin]
         return possible_destinations
 
     def random_posible_destination(self,route,origin):
@@ -34,7 +36,7 @@ class Passenger_Dispatcher():
         return random.choice(possible_destinations)
 
     def get_bus_dispatch_rates(self):
-        for route_id, route_data in self.file["Route"].items():
+        for route_id, route_data in self.generator["Route"].items():
             bus_rate = route_data["bus_rate"]
             self.bus_dispatch_rate[route_id] = bus_rate
 

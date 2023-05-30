@@ -1,13 +1,13 @@
-from numpy import random
 from factory.file_generator.utils import *
+
+from factory.file_generator.dispatcher import Dispatcher
 
 #BUS: [t_in, ID, route, door_n]
 
 
-class Bus_Dispatcher():
+class Bus_Dispatcher(Dispatcher):
     def __init__(self,generator_file):
-        self.file = generator_file
-        self.duration = generator_file["Time"]["Duration"]
+        super().__init__(generator_file)
         self.route_bus_rate = []
         self.bus_hyperparameter = []
         self.to_file = []
@@ -21,12 +21,12 @@ class Bus_Dispatcher():
 
 
     def get_bus_route_rates(self):
-        for route_key, route_val in self.file['Route'].items():
+        for route_key, route_val in self.generator['Route'].items():
             bus_rate_info = route_val['bus_rate']
             self.route_bus_rate.append((route_key, bus_rate_info))
 
     def get_bus_hyperparameter(self):
-        self.bus_hyperparameter.append(self.file['Buses'])
+        self.bus_hyperparameter.append(self.generator['Buses'])
 
     def generate_bus_arrival(self):
         for params in self.route_bus_rate:
@@ -47,22 +47,36 @@ class Bus_Dispatcher():
             
                 time -= arrival
     
+    def get_possible_destinations(self,route,origin):
+        possible_destinations = []
+        for _route in self.routes:
+            if _route.id == route:
+                possible_destinations = _route.get_remaining_stops_id(origin)
+        possible_destinations.append("end")
+        return possible_destinations
+
+    def random_posible_destination(self,route,origin):
+        possible_destinations = self.get_possible_destinations(route,origin)
+        return random.choice(possible_destinations)
+
     def generate_boarded_passengers(self):
-        self.passenger_hyperparameter.append(self.file['Passenger']['boarding_time_dist'])
-        self.passenger_hyperparameter.append(self.file['Passenger']['alighting_time_dist'])
+        self.passenger_hyperparameter.append(self.generator['Passenger']['boarding_time_dist'])
+        self.passenger_hyperparameter.append(self.generator['Passenger']['alighting_time_dist'])
         for bus in self.to_file:
             bus_arrival = bus[0]
             bus_id = bus[1]
             bus_route = bus[2]
 
-            occupancy_distribution = list(self.file["Route"][bus_route]["initial_occupancy"])[0]
-            occupancy_rate = self.file["Route"][bus_route]["initial_occupancy"][occupancy_distribution]
+            occupancy_distribution = list(self.generator["Route"][bus_route]["initial_occupancy"])[0]
+            occupancy_rate = self.generator["Route"][bus_route]["initial_occupancy"][occupancy_distribution]
 
             passenger_count = random_value(occupancy_distribution,occupancy_rate)
 
             for i in range(passenger_count):
                 boarding_distribution = list(self.passenger_hyperparameter[0])[0]
                 boarding_dist_attributes = self.passenger_hyperparameter[0][boarding_distribution]
+
+                destination = self.random_posible_destination(bus_route,"start")
 
                 boarding_t = random_value(boarding_distribution,boarding_dist_attributes)
 
@@ -72,7 +86,7 @@ class Bus_Dispatcher():
                 alighting_t = random_value(alighting_distribution,alighting_dist_attributes)
 
                 #PASSENGER:  [t_in, origin, destiny, route,  boarding_t, alighting_t]
-                passenger = [bus_arrival,bus_id,"end",bus_route,boarding_t,alighting_t]
+                passenger = [bus_arrival,bus_id,destination,bus_route,boarding_t,alighting_t]
                 self.boarded_passenger.append(passenger)
         
 
