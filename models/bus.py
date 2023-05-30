@@ -5,7 +5,7 @@ from models.passenger import Passenger
 
 
 class Bus:
-    def __init__(self, id, route, passengers,door_n, top_speed,acc, desc, capacity):
+    def __init__(self, id, route, passengers,door_n, top_speed,acc, desc):
         self.id = id
         self.route = route
         self.passengers = passengers
@@ -13,7 +13,6 @@ class Bus:
         self.top_speed =top_speed
         self.acc = acc #acc > 0 in m/s2
         self.desc = desc #dec > 0 in m/s2
-        self.capacity = capacity
 
         self.next_stop = None
         self.next_destination = None
@@ -80,7 +79,7 @@ class Bus:
             quotient, remainder = divmod(len(self.passengers), self.door_n - 1)
             parts = []
             index = 0
-            for i in range(n):
+            for i in range(self.door_n - 1):
                 if i < remainder:
                     size = quotient + 1
                 else:
@@ -103,8 +102,8 @@ class Bus:
         breaking_distance = (self.speed**2)/(2*self.desc)
         last_stationary_bus_position = self.next_destination.last_occupied_queue_spot()
 
-        #TODO: 20 meters as in the dimension of a bus + some clearance space
-        self.breaking_point = (breaking_distance + (20 * last_stationary_bus_position))
+        #TODO: 15 meters as in the dimension of a bus + some clearance space
+        self.breaking_point = (breaking_distance + (15 * last_stationary_bus_position))
 
         
     
