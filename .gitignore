@@ -1,3 +1,10 @@
+# Propietary Files
+/files
+*.csv
+*.json
+Sample.py
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
