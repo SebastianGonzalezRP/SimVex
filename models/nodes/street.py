@@ -9,14 +9,6 @@ class Street(Node):
         self.breaking_point_active = False #Breaking Point Always Active Before Stop. Not Always Active Before Intersection.
 
 
-    def calculate_breaking_point(self):
-        #TODO
-        pass
-
-    def update_breaking_point(self):
-        #TODO
-        pass
-
     def print_node(self):
         print("======Street===========")
         print(f"Tracks Numbers: {self.tracks}")

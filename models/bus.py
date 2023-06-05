@@ -16,9 +16,8 @@ class Bus:
 
         self.next_stop = None
         self.next_destination = None
-        self.stop_next_destination = False
-        #self.alighting_queue = self.generate_alighting_queue()
-        self.alighting_queue = {}
+        self.stop_flag = False
+        self.alighting_queue = self.generate_alighting_queue()
         self.status = None #[Stationary, Accelerating, Decelerating, Cruising]
         self.speed = None # speed > 0 in m/s
         self.location = None #Node
@@ -26,10 +25,6 @@ class Bus:
 
         self.breaking_point = None
 
-
-
-    def update_position(self, tick):
-        self.position = self.speed * tick
 
     def update_speed(self, tick):
         if self.status == "Stationary":
@@ -49,6 +44,8 @@ class Bus:
         elif self.status == "Cruising":
             pass
 
+    def update_position(self, tick):
+        self.position = self.speed * tick
 
     def assign_next_stop(self):
         current_node = self.location
@@ -101,12 +98,12 @@ class Bus:
         if type(self.next_destination) == Stop:
             if self.route in self.next_destination.serving_routes:
                 #TODO:Check Impact of Unocupied Stop Station or No Alighting Passengers
-                self.stop_next_destination = True
+                self.stop_flag = True
         elif type(self.next_destination) == Intersection:
             if self.next_destination.semaphore in ["Y","R"]:
-                self.stop_next_destination = True
+                self.stop_flag = True
         else:
-            self.stop_next_destination = False
+            self.stop_flag = False
 
     def update_breaking_point(self):
         breaking_distance = (self.speed**2)/(2*self.desc)
@@ -115,23 +112,27 @@ class Bus:
         #TODO: 15 meters as in the dimension of a bus + some clearance space
         self.breaking_point = (breaking_distance + (15 * last_stationary_bus_position))
 
+    def go_next_node(self):
+        if self.stop_flag:
+            pass
+        else:
+            pass
+
     def set_reference_nodes(self):
         self.location = self.location.next_node
         self.set_next_stop()
         self.set_next_destination()
 
-
-
-
     def enter_simulation(self):
         self.set_reference_nodes()
         self.print_node_status()
-        self.stop_next_destination = False
+        self.stop_flag = False
         self.status = "Cruising"
         self.speed = self.top_speed
         self.location = self.location.next_node
         self.position = 0
         self.update_breaking_point()
+
 
     def print_node_status(self):
         print(f"Current Location: {self.location}")

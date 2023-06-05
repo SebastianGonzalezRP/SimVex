@@ -7,8 +7,8 @@ def construct_bus(construction_params):
                   route = construction_params[1],       #Object.Route
                   passengers= construction_params[2],   #List[Object.Passenger]
                   door_n= construction_params[3],       #Integer
-                  acc=construction_params[4],           #Integer (m/s2)
-                  desc=construction_params[5],          #Integer (m/s2)
-                  top_speed=construction_params[6],)    #Integer (m/s)
+                  acc=construction_params[4],           #Float (m/s2)
+                  desc=construction_params[5],          #Float (m/s2)
+                  top_speed=construction_params[6],)    #Float (m/s)
 
     return new_bus

@@ -40,6 +40,7 @@ class Stop(Node):
         self.bus_waiting_queue = [None for i in range(size - 1)]
 
     def arriving_bus(self, bus):
+        
         pass
 
     def departing_bus(self, bus):
