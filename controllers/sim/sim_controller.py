@@ -12,6 +12,9 @@ class Sim_Controller:
         self.passenger_data = self.load_csv(passenger_dispatch_path)
         self.bus_data = self.load_csv(bus_dispatch_path)
 
+        self.duration = self.generator["Time"]["Duration"]
+        self.tick = self.generator["Time"]["Tick"]
+
         self.transit_network = []
         self.routes = []
 
@@ -59,6 +62,12 @@ class Sim_Controller:
             if route.id == route_id:
                 return route
             
+    def get_stop_by_id(self,stop_id):
+        for node in self.transit_network.network:
+            if type(node) == Stop:
+                if node.id == stop_id:
+                    return node
+            
     def set_bus_hyperparameter(self):
         self.bus_hyperparameter = self.generator["Buses"]
 
@@ -73,7 +82,7 @@ class Sim_Controller:
 
     def create_passenger_dispatcher(self):
         for passenger_data in self.passenger_data:
-            arrival_time = passenger_data[0]
+            arrival_time = int(passenger_data[0])
             new_passenger_params = self.create_passenger_construction_params(passenger_data)
             new_passenger = construct_passenger(new_passenger_params)
             self.passenger_dispatcher.append((arrival_time,new_passenger))
@@ -107,26 +116,75 @@ class Sim_Controller:
 
     def create_bus_dispatcher(self):
         for bus_data in self.bus_data:
-            arrival_time = bus_data[0]
+            arrival_time = int(bus_data[0])
             new_bus_params = self.create_bus_construction_params(bus_data)
             new_bus = construct_bus(new_bus_params)
             self.bus_dispatcher.append((arrival_time,new_bus))
 
 
+    def populate_stops(self):
+        print(len(self.passenger_dispatcher))
+        arrived_passengers = [psng_arrival[1] for psng_arrival in self.passenger_dispatcher if psng_arrival[0] == 0]
+        self.passenger_dispatcher = [psng_arrival for psng_arrival in self.passenger_dispatcher if psng_arrival[0] != 0]
+        for node in self.transit_network.network:
+            if type(node) == Stop:
+                passengers = []
+                for passenger in arrived_passengers:
+                    if passenger.origin == node.id:
+                        passengers.append(passenger) 
+                        arrived_passengers.remove(passenger)  
+                node.build_passenger_boarding_queue(passengers) 
+
+    def initialize_queue_length(self):
+        for node in self.transit_network.network:
+            if type(node) == Stop:
+                node.calculate_queue_length()
+            if type(node) == Intersection:
+                node.calculate_queue_length()
+        
+    def set_bus_star_mark(self):
+        for bus_arrival in self.bus_dispatcher:
+            bus_arrival[1].location = self.transit_network.network[0]
+
+    def check_bus_dispatcher(self):
+        for bus_arrival in self.bus_dispatcher:
+            if bus_arrival[0] <= self.simulated_time:
+                self.dispatch_bus(bus_arrival[1])
+        
+    def check_passenger_dispatcher(self):
+        for passenger_arrival in self.passenger_dispatcher:
+            if passenger_arrival[0] <= self.simulated_time:
+                self.dispatch_passenger(passenger_arrival[1]
+                                        
+                                        )
+    def dispatch_bus(self, dispatched_bus):
+        
+        pass
+
+    def dispatch_passenger(self, dispatched_passenger):
+        pass
+
+
+#MainLoop Functions
     def initialize_sim(self):
         self.create_nodes()
         self.create_routes()
         self.set_bus_hyperparameter()
         self.create_bus_dispatcher()
         self.create_passenger_dispatcher()
+        self.populate_stops()
+        self.initialize_queue_length()
+        self.set_bus_star_mark() 
+
+    def run_sim(self):
+        self.simulated_time = self.tick
+        while self.simulated_time < self.duration:
+            self.check_bus_dispatcher()
+            self.check_passenger_dispatcher()
+            pass
+            self.simulated_time += self.tick
 
 
     def debug(self):
-        for node in self.transit_network.network:
-            print(node)
-        for route in self.routes:
-            print(route)
-    
-            
-        
-    
+        for bus in self.bus_dispatcher:
+            bus[1].enter_simulation()
