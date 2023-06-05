@@ -63,6 +63,7 @@ class Intersection(Node):
         for i, item in reversed(list(enumerate(self.bus_waiting_queue))):
             if item is not None:
                 return i
+        return 0
             
     def print_node(self):
         print("======Intersection==========")

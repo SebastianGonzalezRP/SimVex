@@ -16,7 +16,9 @@ class Bus:
 
         self.next_stop = None
         self.next_destination = None
-        self.alighting_queue = self.generate_alighting_queue()
+        self.stop_next_destination = False
+        #self.alighting_queue = self.generate_alighting_queue()
+        self.alighting_queue = {}
         self.status = None #[Stationary, Accelerating, Decelerating, Cruising]
         self.speed = None # speed > 0 in m/s
         self.location = None #Node
@@ -27,16 +29,7 @@ class Bus:
 
 
     def update_position(self, tick):
-        #A bus can only be "Stationary" at stops and intersections
-        #TODO:BIG TODO!!!!
-
-        if isinstance(self.next_destination,Stop):
-            pass
-        elif isinstance(self.next_destination,Intersection):
-
-            pass
-        else:
-            pass
+        self.position = self.speed * tick
 
     def update_speed(self, tick):
         if self.status == "Stationary":
@@ -94,9 +87,26 @@ class Bus:
     def disembark_passenger(self, passenger):
         self.passengers.remove(passenger)
 
-    def determine_next_stop(self):
-        #TODO
-        pass
+    def set_next_stop(self):
+        selected_node = self.location.next_node
+        while type(selected_node) != Stop:
+            selected_node = selected_node.next_node
+        self.next_stop = selected_node
+        
+
+    def set_next_destination(self):
+        self.next_destination = self.location.next_node
+
+    def update_stop_flag(self):
+        if type(self.next_destination) == Stop:
+            if self.route in self.next_destination.serving_routes:
+                #TODO:Check Impact of Unocupied Stop Station or No Alighting Passengers
+                self.stop_next_destination = True
+        elif type(self.next_destination) == Intersection:
+            if self.next_destination.semaphore in ["Y","R"]:
+                self.stop_next_destination = True
+        else:
+            self.stop_next_destination = False
 
     def update_breaking_point(self):
         breaking_distance = (self.speed**2)/(2*self.desc)
@@ -105,6 +115,28 @@ class Bus:
         #TODO: 15 meters as in the dimension of a bus + some clearance space
         self.breaking_point = (breaking_distance + (15 * last_stationary_bus_position))
 
+    def set_reference_nodes(self):
+        self.location = self.location.next_node
+        self.set_next_stop()
+        self.set_next_destination()
+
+
+
+
+    def enter_simulation(self):
+        self.set_reference_nodes()
+        self.print_node_status()
+        self.stop_next_destination = False
+        self.status = "Cruising"
+        self.speed = self.top_speed
+        self.location = self.location.next_node
+        self.position = 0
+        self.update_breaking_point()
+
+    def print_node_status(self):
+        print(f"Current Location: {self.location}")
+        print(f"Next Destination: {self.next_destination}")
+        print(f"Next Stop: {self.next_stop}")
         
     
         
