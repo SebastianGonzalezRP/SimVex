@@ -143,7 +143,7 @@ class Bus:
         self.next_node = self.location.next_node
         if type(self.next_node) == Stop:
             self.generate_alighting_queue()
-            
+
 #endregion Transfer Node Block
 
     def enter_simulation(self):

@@ -149,6 +149,7 @@ class Sim_Controller:
     def set_bus_star_mark(self):
         for bus_arrival in self.bus_dispatcher:
             bus_arrival[1].location = self.transit_network.network[0]
+            bus_arrival[1].next_node = bus_arrival[1].location.next_node
 
     def update_intersections(self):
         for node in self.transit_network.network:
