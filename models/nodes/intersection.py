@@ -64,6 +64,10 @@ class Intersection(Node):
             if item is not None:
                 return i
         return 0
+    
+    def broadcast_green(self):
+        #TODO
+        pass
             
     def print_node(self):
         print("======Intersection==========")

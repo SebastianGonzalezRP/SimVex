@@ -23,6 +23,10 @@ class Sim_Controller:
         self.bus_dispatcher = []
         self.passenger_dispatcher = []
 
+        self.bus_in_transit = []
+        self.bus_in_stops = []
+        self.bus_in_intersection = []
+
         self.initialize_sim()
 
 
@@ -146,23 +150,50 @@ class Sim_Controller:
         for bus_arrival in self.bus_dispatcher:
             bus_arrival[1].location = self.transit_network.network[0]
 
+    def update_intersections(self):
+        for node in self.transit_network.network:
+            if type(node) == Intersection:
+                node.update_timer(self.tick)
+
     def check_bus_dispatcher(self):
-        for bus_arrival in self.bus_dispatcher:
-            if bus_arrival[0] <= self.simulated_time:
-                self.dispatch_bus(bus_arrival[1])
+        arriving_buses = [bus_arrival[1] for bus_arrival in self.bus_dispatcher if bus_arrival[0] <= self.simulated_time]
+        self.bus_dispatcher = [bus_arrival[1] for bus_arrival in self.bus_dispatcher if bus_arrival[0] > self.simulated_time]
+        for bus in arriving_buses:
+            self.dispatch_bus(bus)
         
     def check_passenger_dispatcher(self):
-        for passenger_arrival in self.passenger_dispatcher:
-            if passenger_arrival[0] <= self.simulated_time:
-                self.dispatch_passenger(passenger_arrival[1]
-                                        
-                                        )
+        arriving_passengers = [psng_arrival[1] for psng_arrival in self.passenger_dispatcher if psng_arrival[0] <= self.simulated_time]
+        self.passenger_dispatcher = [psng_arrival for psng_arrival in self.passenger_dispatcher if psng_arrival[0] > self.simulated_time]
+        for passenger in arriving_passengers:
+            self.dispatch_passenger(passenger)
+
+
     def dispatch_bus(self, dispatched_bus):
-        
-        pass
+        self.bus_in_transit.append(dispatched_bus)
+        dispatched_bus.enter_simulation()
 
     def dispatch_passenger(self, dispatched_passenger):
+        objective_stop = self.get_stop_by_id(dispatched_passenger.origin)
+        objective_stop.arriving_passenger(dispatched_passenger)
+
+    def update_buses_in_transit(self):
+        for bus in self.bus_in_transit:
+            bus.update_speed(self.tick)
+            bus.update_position(self.tick)
+            bus.update_stop_flag()
+            bus.update_breaking_point()
+            bus.should_brake()
+
+    def update_buses_in_stop(self):
         pass
+
+    def check_bus_node_transfer(self):
+        for bus in self.bus_in_transit:
+            position = bus.position
+            node_length = bus.location.length
+            if position >= node_length:
+                bus.node_transition()
+
 
 
 #MainLoop Functions
@@ -179,8 +210,12 @@ class Sim_Controller:
     def run_sim(self):
         self.simulated_time = self.tick
         while self.simulated_time < self.duration:
+            self.update_intersections()
             self.check_bus_dispatcher()
             self.check_passenger_dispatcher()
+            self.update_buses_in_transit()
+            self.check_bus_node_transfer()
+            self.check_passenger_transfer()
             pass
             self.simulated_time += self.tick
 
