@@ -1,7 +1,7 @@
-from models.nodes.stop import Stop
-from models.nodes.intersection import Intersection
-from models.nodes.street import Street
-from models.passenger import Passenger
+from nodes.stop import Stop
+from nodes.intersection import Intersection
+from nodes.street import Street
+from passenger import Passenger
 
 
 class Bus:
@@ -60,9 +60,7 @@ class Bus:
 #region Sim Update Block
 
     def update_speed(self, tick):
-        if self.status == "Stationary":
-            pass
-        elif self.status == "Accelerating":
+        if self.status == "Accelerating":
             if (self.speed + self.acc * tick) >= self.top_speed:
                 self.speed = self.top_speed
                 self.status = "Cruising"
@@ -74,8 +72,6 @@ class Bus:
                 self.status = "Stationary"
             else:
                 self.speed -= self.desc * tick
-        elif self.status == "Cruising":
-            pass
 
     def update_position(self, tick):
         self.position = self.speed * tick
@@ -118,6 +114,7 @@ class Bus:
 
     #Node Transition Should be callable by controllers in conditions
     def node_transition(self):
+        print(f"debug transition")
         if type(self.location) == Street:
             if self.stop_flag:
                 self.go_next_node()
@@ -126,6 +123,7 @@ class Bus:
                 self.go_next_node()
         else:
             self.go_next_node()
+        
     
     def go_next_node(self):
         if type(self.next_node) != Street: #Case Node is at Stop or Intersection
@@ -155,9 +153,14 @@ class Bus:
 
 
 
-    def print_node_status(self):
+    def print_status(self):
+        print(f"==================================")
         print(f"Current Location: {self.location}")
+        print(f"Current Position: {self.position}")
+        print(f"Current Status: {self.status}")
+        print(f"Current Speed: {self.speed}")
         print(f"Next Destination: {self.next_node}")
+        print(f"==================================")
         
     
         

@@ -1,4 +1,4 @@
-from models.nodes.node import Node
+from node import Node
 
 YELLOW_TIMER_CONSTANT = 3
 BUS_DIMENSION = 15
