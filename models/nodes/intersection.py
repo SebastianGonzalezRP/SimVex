@@ -43,14 +43,15 @@ class Intersection(Node):
         if self.current_timer_left - tick <= 0:
             time_remaining = tick - self.current_timer_left
             if self.semaphore == "G":
-                self.activate_y_light
+                self.activate_y_light()
             elif self.semaphore == "Y":
-                self.activate_r_light
+                self.activate_r_light()
             elif self.semaphore == "R":
-                self.activate_g_light
-            self.current_timer_left - time_remaining
+                self.activate_g_light()
+            self.current_timer_left -= time_remaining
         else:
-            self.current_timer_left - tick
+            self.current_timer_left -= tick
+
 
     def calculate_queue_length(self):
         street_length = self.prev_node.length
@@ -77,4 +78,10 @@ class Intersection(Node):
         print(f"Green Timer: {self.g_timer}")
         print(f"Yellow Timer: {self.y_timer}")
         print(f"Red Timer: {self.r_timer}")
+        print("======================")
+
+    def print_node_state(self):
+        print("======Intersection==========")
+        print(f"Current timer: {self.current_timer_left}")
+        print(f"Current Semaphore: {self.semaphore}")
         print("======================")

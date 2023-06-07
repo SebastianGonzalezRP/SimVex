@@ -24,10 +24,7 @@ class Sim_Controller:
         self.passenger_dispatcher = []
 
         self.bus_in_transit = []
-        self.bus_in_stops = []
-        self.bus_in_intersection = []
 
-        self.initialize_sim()
 
 
     def load_json(self, path):
@@ -127,7 +124,6 @@ class Sim_Controller:
 
 
     def populate_stops(self):
-        print(len(self.passenger_dispatcher))
         arrived_passengers = [psng_arrival[1] for psng_arrival in self.passenger_dispatcher if psng_arrival[0] == 0]
         self.passenger_dispatcher = [psng_arrival for psng_arrival in self.passenger_dispatcher if psng_arrival[0] != 0]
         for node in self.transit_network.network:
@@ -152,13 +148,14 @@ class Sim_Controller:
             bus_arrival[1].next_node = bus_arrival[1].location.next_node
 
     def update_intersections(self):
+        
         for node in self.transit_network.network:
             if type(node) == Intersection:
                 node.update_timer(self.tick)
 
     def check_bus_dispatcher(self):
         arriving_buses = [bus_arrival[1] for bus_arrival in self.bus_dispatcher if bus_arrival[0] <= self.simulated_time]
-        self.bus_dispatcher = [bus_arrival[1] for bus_arrival in self.bus_dispatcher if bus_arrival[0] > self.simulated_time]
+        self.bus_dispatcher = [bus_arrival for bus_arrival in self.bus_dispatcher if bus_arrival[0] > self.simulated_time]
         for bus in arriving_buses:
             self.dispatch_bus(bus)
         
@@ -216,11 +213,25 @@ class Sim_Controller:
             self.check_passenger_dispatcher()
             self.update_buses_in_transit()
             self.check_bus_node_transfer()
-            self.check_passenger_transfer()
             pass
             self.simulated_time += self.tick
 
-
+#region Debug
     def debug(self):
-        for bus in self.bus_dispatcher:
-            bus[1].enter_simulation()
+        self.create_nodes()
+        self.create_routes()
+        self.set_bus_hyperparameter()
+        self.create_bus_dispatcher()
+        self.clear_bus_dispatcher()
+        self.create_passenger_dispatcher()
+        self.populate_stops()
+        self.initialize_queue_length()
+        self.set_bus_star_mark() 
+
+
+        self.run_sim()
+        pass
+
+    def clear_bus_dispatcher(self):
+        self.bus_dispatcher = [self.bus_dispatcher[0]]
+#endregion Debug
