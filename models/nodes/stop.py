@@ -8,9 +8,8 @@ class Stop(Node):
         self.n_platform = n_platform
 
         self.passengers_boarding_queue = {} #Dictionary with the Route Label, and passengers queue
-        self.bus_waiting_queue = None
+        self.bus_waiting_queue = []
 
-        self.break_signal = True
 
     #Passengers entering the simulation at the this Stop
     def arriving_passenger(self,passenger):

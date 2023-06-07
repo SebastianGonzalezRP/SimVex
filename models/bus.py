@@ -1,8 +1,8 @@
-from nodes.stop import Stop
-from nodes.intersection import Intersection
-from nodes.street import Street
-from route import Route
-from passenger import Passenger
+from models.nodes.stop import Stop
+from models.nodes.intersection import Intersection
+from models.nodes.street import Street
+from models.route import Route
+from models.passenger import Passenger
 from typing import List
 
 
@@ -84,7 +84,7 @@ class Bus:
                 self.speed -= self.desc * tick
 
     def update_position(self, tick):
-        self.position = self.speed * tick
+        self.position += self.speed * tick
 
     def update_stop_flag(self):
         if type(self.next_node) == Stop:
@@ -124,7 +124,6 @@ class Bus:
 
     #Node Transition Should be callable by controllers in conditions
     def node_transition(self):
-        print(f"debug transition")
         if type(self.location) == Street:
             if self.stop_flag:
                 self.go_next_node()
@@ -167,6 +166,7 @@ class Bus:
         print(f"==================================")
         print(f"Current Location: {self.location}")
         print(f"Current Position: {self.position}")
+        print(f"Alighting Queue: {self.alighting_queue}")
         print(f"Current Status: {self.status}")
         print(f"Current Speed: {self.speed}")
         print(f"Next Destination: {self.next_node}")
