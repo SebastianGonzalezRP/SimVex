@@ -1,4 +1,4 @@
-from node import Node
+from models.nodes.node import Node
 
 class End(Node):
 

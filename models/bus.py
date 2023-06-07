@@ -1,11 +1,21 @@
 from nodes.stop import Stop
 from nodes.intersection import Intersection
 from nodes.street import Street
+from route import Route
 from passenger import Passenger
+from typing import List
 
 
 class Bus:
-    def __init__(self, id, route, passengers,door_n, top_speed,acc, desc):
+    def __init__(self, 
+                id: str,
+                route: Route, 
+                passengers: List[Passenger],
+                door_n: int, 
+                top_speed: float, 
+                acc: float, 
+                desc: float):
+    
         self.id = id
         self.route = route
         self.passengers = passengers
@@ -152,7 +162,7 @@ class Bus:
         self.update_stop_flag()
 
 
-
+#region Debug
     def print_status(self):
         print(f"==================================")
         print(f"Current Location: {self.location}")
@@ -161,6 +171,8 @@ class Bus:
         print(f"Current Speed: {self.speed}")
         print(f"Next Destination: {self.next_node}")
         print(f"==================================")
+
+#endregion
         
     
         

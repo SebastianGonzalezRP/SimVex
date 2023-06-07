@@ -1,5 +1,11 @@
+from models.nodes.stop import Stop
+from typing import List
+
 class Route:
-    def __init__ (self,id,serving_stops):
+    def __init__ (self,
+                  id: str,
+                  serving_stops: List[Stop]):
+        
         self.id = id
         self.serving_stops = serving_stops
 

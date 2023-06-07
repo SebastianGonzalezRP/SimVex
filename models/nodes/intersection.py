@@ -1,10 +1,10 @@
-from node import Node
+from models.nodes.node import Node
 
 YELLOW_TIMER_CONSTANT = 3
 BUS_DIMENSION = 15
 
 class Intersection(Node):
-    def __init__(self, cicle_duration, effective_green):
+    def __init__(self, cicle_duration: int, effective_green: float):
         self.semaphore = 'G' #["G","Y","R"]
         self.cicle_duration = cicle_duration #Seconds
         self.effective_green = effective_green #Percentage (0,1) ej: 0.75

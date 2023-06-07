@@ -1,9 +1,8 @@
-from node import Node
-
+from models.nodes.node import Node
 BUS_DIMENSION = 15
 
 class Stop(Node):
-    def __init__(self,id,n_platform,):
+    def __init__(self,id: str,n_platform: int):
         self.id = id
         self.serving_routes = []
         self.n_platform = n_platform

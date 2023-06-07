@@ -1,11 +1,13 @@
 from models.nodes.start import Start
 from models.nodes.end import End
+from models.nodes.node import Node
+from typing import List
 
 
 #nodes =  list of nodes of type [Street, Stop, Intersection], initially unlinked
 
 class TransitNetwork():
-    def __init__(self, nodes):
+    def __init__(self, nodes:List[Node]):
         self.network =  TransitNetwork.create_network(nodes)
 
     # Links the node elements and adds a Start and End node to the nodes list
