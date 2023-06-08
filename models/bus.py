@@ -209,8 +209,10 @@ class Bus:
     def go_next_node(self):
         if type(self.next_node) != Street: #Case Node is at Stop or Intersection
             self.status = "Stationary"
+            self.next_node.arriving_bus(self)
         else:                                       #Case Node is at Street
             self.status = "Accelerating"
+            self.location.departing_bus(self)
         self.position = 0
         self.breaking_point = 0
         self.stop_flag = False

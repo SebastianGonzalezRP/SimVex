@@ -234,7 +234,7 @@ class Sim_Controller:
             self.check_bus_node_transfer()
             self.remove_exited_buses()
             self.simulated_time += self.tick
-
+        print(self.completed_buses)
 #region Debug
     def debug(self):
         self.create_nodes()

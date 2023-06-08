@@ -60,22 +60,28 @@ class Intersection(Node):
         self.bus_waiting_queue = [None for i in range(size - 1)]
         
     def arriving_bus(self, bus):
-        #TODO
-        pass
+        index = self.first_available_queue_spot()
+        self.bus_waiting_queue[index] = bus
 
     def departing_bus(self, bus):
-        #TODO
-        pass
+        try:
+            index = self.bus_waiting_queue.index(bus)
+            self.bus_waiting_queue[index] = None
+        except ValueError:
+            print("Bus Is Not In The Stop Operational Queue")
 
-    def last_occupied_queue_spot(self):
+
+    def first_available_queue_spot(self):
         for i, item in reversed(list(enumerate(self.bus_waiting_queue))):
             if item is not None:
-                return i
+                return i + 1
         return 0
     
     def broadcast_green(self):
-        #TODO
-        pass
+        for bus in self.bus_waiting_queue:
+            if bus != None:
+                bus.node_transition()
+                self.departing_bus(bus)
             
     def print_node(self):
         print("======Intersection==========")
