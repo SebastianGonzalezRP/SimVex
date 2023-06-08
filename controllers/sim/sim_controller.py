@@ -23,8 +23,9 @@ class Sim_Controller:
         self.bus_dispatcher = []
         self.passenger_dispatcher = []
 
-        self.bus_in_transit = []
-
+        self.simulated_buses = []
+        self.completed_buses = []
+    
 
 
     def load_json(self, path):
@@ -148,7 +149,6 @@ class Sim_Controller:
             bus_arrival[1].next_node = bus_arrival[1].location.next_node
 
     def update_intersections(self):
-        
         for node in self.transit_network.network:
             if type(node) == Intersection:
                 node.update_timer(self.tick)
@@ -167,7 +167,7 @@ class Sim_Controller:
 
 
     def dispatch_bus(self, dispatched_bus):
-        self.bus_in_transit.append(dispatched_bus)
+        self.simulated_buses.append(dispatched_bus)
         dispatched_bus.enter_simulation()
 
     def dispatch_passenger(self, dispatched_passenger):
@@ -175,22 +175,39 @@ class Sim_Controller:
         objective_stop.arriving_passenger(dispatched_passenger)
 
     def update_buses_in_transit(self):
-        for bus in self.bus_in_transit:
-            bus.update_speed(self.tick)
-            bus.update_position(self.tick)
-            bus.update_stop_flag()
-            bus.update_breaking_point()
-            bus.should_brake()
+        for bus in self.simulated_buses:
+            if type(bus.location) == Street:
+                bus.update_speed(self.tick)
+                bus.update_position(self.tick)
+                bus.update_stop_flag()
+                bus.update_breaking_point()
+                bus.should_brake()
 
-    def update_buses_in_stop(self):
-        pass
+    def update_buses_at_stops(self):
+        for bus in self.simulated_buses:
+            if type(bus.location) == Stop:
+                bus.check_operational_position_in_queue(self.tick)
+        for node in self.transit_network.network:
+            if type(node) == Stop:
+                node.reorganize_queue()
+    
+    def update_buses_at_intersections(self):
+        for bus in self.simulated_buses:
+            if type(bus.location) == Intersection:
+                pass
 
     def check_bus_node_transfer(self):
-        for bus in self.bus_in_transit:
+        for bus in self.simulated_buses: 
             position = bus.position
             node_length = bus.location.length
             if position >= node_length:
                 bus.node_transition()
+
+    def remove_exited_buses(self):
+        for bus in self.simulated_buses[:]:
+            if type(bus.location) == End:
+                self.simulated_buses.remove(bus)
+                self.completed_buses.append(bus)
 
 
 
@@ -212,8 +229,10 @@ class Sim_Controller:
             self.check_bus_dispatcher()
             self.check_passenger_dispatcher()
             self.update_buses_in_transit()
+            self.update_buses_at_stops()
+            self.update_buses_at_intersections()
             self.check_bus_node_transfer()
-            pass
+            self.remove_exited_buses()
             self.simulated_time += self.tick
 
 #region Debug

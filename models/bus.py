@@ -152,24 +152,40 @@ class Bus:
                 else:
                     passenger.alighting_time -= tick
 
+    def check_queue_departure_conditions(self):
+        #assert (type(self.location),Stop)
+        stop = self.location
+        position = stop.bus_operational_queue.index(self)
+        if position == 0:
+            return True
+        else:
+            if stop.bus_operational_queue[0] == None:
+                return True 
+            elif self.next_node.tracks > 1:
+                return True
+            else:
+                return False
+            
     def check_operation_completion(self,tick):
         stop = self.location
         route = self.route.id
         if len(stop.passengers_boarding_queue[route]) == 0:
             if sum(len(queue) for queue in self.alighting_queues) == 0:
-                stop.departing_bus(self)
-                self.node_transition()
+                if self.check_queue_departure_conditions():
+                    stop.departing_bus(self)
+                    self.node_transition()
         else:
             self.passenger_transfer(tick)
 
     def check_operational_position_in_queue(self,tick):
         stop = self.location
-        position_index = stop.bus_waiting_queue.index(self)
-        if position_index != None:
-            if position_index in range(stop.n_platform):
-                self.check_operation_completion(tick)
+        if self in stop.bus_operational_queue:
+            self.check_operation_completion(tick)
+        elif self in stop.bus_waiting_queue:
+            pass
         else:
             stop.arriving_bus(self)
+
 #endregion
 
 #region Intersection Method
