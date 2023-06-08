@@ -59,6 +59,13 @@ class Intersection(Node):
         size = street_length // BUS_DIMENSION
         self.bus_waiting_queue = [None for i in range(size - 1)]
         
+    def arriving_bus(self, bus):
+        #TODO
+        pass
+
+    def departing_bus(self, bus):
+        #TODO
+        pass
 
     def last_occupied_queue_spot(self):
         for i, item in reversed(list(enumerate(self.bus_waiting_queue))):
