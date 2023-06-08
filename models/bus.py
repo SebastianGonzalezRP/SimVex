@@ -27,7 +27,7 @@ class Bus:
         self.next_node = None
         self.stop_flag = False
         self.check_stop_flag = True
-        self.alighting_queue = []
+        self.alighting_queues = []
         self.status = None #[Stationary, Accelerating, Decelerating, Cruising]
         self.speed = None # speed > 0 in m/s
         self.location = None #Node
@@ -44,8 +44,11 @@ class Bus:
 
     def disembark_passenger(self, passenger):
         self.passengers.remove(passenger)
+        for alighting_queue in self.alighting_queues:
+            if passenger in alighting_queue:
+                alighting_queue.remove(passenger)
 
-    def generate_alighting_queue(self):
+    def generate_alighting_queues(self):
         #Isolate all passengers descending in next node (Stop)
         alighting_passengers = []
         for passenger in self.passengers:
@@ -53,7 +56,7 @@ class Bus:
                 alighting_passengers.append[passenger]
 
         if (self.door_n == 1):
-            self.alighting_queue = alighting_passengers
+            self.alighting_queues = alighting_passengers
         else:
             quotient, remainder = divmod(len(self.passengers), self.door_n - 1)
             parts = []
@@ -65,9 +68,9 @@ class Bus:
                     size = quotient
                 parts.append(self.passengers[index:index + size])
                 index += size
-            self.alighting_queue = parts
+            self.alighting_queues = parts
 
-#region Sim Update Block
+#region Street Circulation Methods
 
     def update_speed(self, tick):
         if self.status == "Accelerating":
@@ -91,7 +94,7 @@ class Bus:
             if self.route in self.next_node.serving_routes:
                 if len(self.next_node.passengers_boarding_queue[self.route.id])>0:
                     self.stop_flag = True
-                elif len(self.alighting_queue) > 0:
+                elif len(self.alighting_queues) > 0:
                     self.stop_flag = True
         elif type(self.next_node) == Intersection and self.check_stop_flag:
             if self.position < self.breaking_point:        # Pre Breaking Point
@@ -119,7 +122,60 @@ class Bus:
         if self.stop_flag and self.position >= self.breaking_point:
             self.status = "Decelerating"
 
-#endregion Sim Update Block
+#endregion
+
+#region Stop Operations Methods
+    def passenger_transfer(self, tick):
+        stop = self.location
+        route = self.route.id
+
+        if len(stop.passengers_boarding_queue[route]) == 0:
+            if sum(len(queue) for queue in self.alighting_queues) == 0:
+                stop.departing_bus(self)
+                self.node_transition()
+                
+        #Boarding Passengers
+        if len(stop.passengers_boarding_queue[route]) > 0:
+            passenger = stop.passengers_boarding_queue[route][0]
+            if passenger.boarding_time - tick <=0:
+                self.board_passenger(passenger)
+                stop.leaving_passenger(passenger)
+            else:
+                passenger.boarding_time -= tick
+
+        #Alighting Passenger 
+        for alighting_q in self.alighting_queues[:]:
+            if len(alighting_q) > 0:
+                passenger = alighting_q[0]
+                if passenger.alighting_time - tick <=0:
+                    self.disembark_passenger(passenger)
+                else:
+                    passenger.alighting_time -= tick
+
+    def check_operation_completion(self,tick):
+        stop = self.location
+        route = self.route.id
+        if len(stop.passengers_boarding_queue[route]) == 0:
+            if sum(len(queue) for queue in self.alighting_queues) == 0:
+                stop.departing_bus(self)
+                self.node_transition()
+        else:
+            self.passenger_transfer(tick)
+
+    def check_operational_position_in_queue(self,tick):
+        stop = self.location
+        position_index = stop.bus_waiting_queue.index(self)
+        if position_index != None:
+            if position_index in range(stop.n_platform):
+                self.check_operation_completion(tick)
+        else:
+            stop.arriving_bus(self)
+#endregion
+
+#region Intersection Method
+
+#endregion
+
 #region Transfer Node Block
 
     #Node Transition Should be callable by controllers in conditions
@@ -149,7 +205,7 @@ class Bus:
         self.location = self.next_node
         self.next_node = self.location.next_node
         if type(self.next_node) == Stop:
-            self.generate_alighting_queue()
+            self.generate_alighting_queues()
 
 #endregion Transfer Node Block
 
@@ -166,7 +222,7 @@ class Bus:
         print(f"==================================")
         print(f"Current Location: {self.location}")
         print(f"Current Position: {self.position}")
-        print(f"Alighting Queue: {self.alighting_queue}")
+        print(f"Alighting Queue: {self.alighting_queues}")
         print(f"Current Status: {self.status}")
         print(f"Current Speed: {self.speed}")
         print(f"Next Destination: {self.next_node}")
