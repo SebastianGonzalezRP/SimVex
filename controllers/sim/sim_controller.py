@@ -6,6 +6,7 @@ from models.route import Route
 from factory.bus_factory import *
 from factory.passenger_factory import * 
 
+
 class Sim_Controller:
     def __init__(self,generator_path,passenger_dispatch_path,bus_dispatch_path):
         self.generator = self.load_json(generator_path)
@@ -185,10 +186,10 @@ class Sim_Controller:
     def update_buses_in_transit(self):
         for bus in self.simulated_buses:
             if type(bus.location) == Street:
-                bus.update_speed(self.tick)
-                bus.update_position(self.tick)
-                bus.update_stop_flag()
                 bus.update_breaking_point()
+                bus.update_position(self.tick)
+                bus.update_speed(self.tick)
+                bus.update_stop_flag()
                 bus.should_brake()
 
     def update_buses_at_stops(self):
@@ -215,7 +216,7 @@ class Sim_Controller:
 
     def remove_exited_buses(self):
         for bus in self.simulated_buses[:]:
-            if type(bus.location) == End:
+            if bus.location == self.transit_network.network[-1]:
                 self.simulated_buses.remove(bus)
                 self.completed_buses.append(bus)
 
@@ -236,8 +237,6 @@ class Sim_Controller:
     def run_sim(self):
         self.simulated_time = self.tick
         while self.simulated_time < self.duration:
-            if self.simulated_time == 595: 
-                if 1 == 1:print()
             self.update_intersections()
             self.check_bus_dispatcher()
             self.check_passenger_dispatcher()
