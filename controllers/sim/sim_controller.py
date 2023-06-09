@@ -59,6 +59,14 @@ class Sim_Controller:
             new_route = Route(route_id, serving_stops)
             self.routes.append(new_route)
 
+    def assign_operating_routes(self):
+        for node in self.transit_network.network:
+            if type(node) == Stop:
+                for route in self.routes:
+                    for stop in route.serving_stops:
+                        if stop == node:
+                            node.serving_routes.append(route)
+
     def get_route_by_id(self,route_id):
         for route in self.routes:
             if route.id == route_id:
@@ -189,19 +197,21 @@ class Sim_Controller:
                 bus.check_operational_position_in_queue(self.tick)
         for node in self.transit_network.network:
             if type(node) == Stop:
-                node.reorganize_queue()
+                node.reorganize_queues()
     
     def update_buses_at_intersections(self):
-        for bus in self.simulated_buses:
-            if type(bus.location) == Intersection:
-                pass
+        for node in self.transit_network.network:
+            if type(node) == Intersection:
+                if node.semaphore == 'G':
+                    node.broadcast_green()
 
     def check_bus_node_transfer(self):
         for bus in self.simulated_buses: 
-            position = bus.position
-            node_length = bus.location.length
-            if position >= node_length:
-                bus.node_transition()
+            if type(bus.location) == Street:
+                position = bus.position
+                node_length = bus.location.length
+                if position >= node_length:
+                    bus.node_transition()
 
     def remove_exited_buses(self):
         for bus in self.simulated_buses[:]:
@@ -215,6 +225,7 @@ class Sim_Controller:
     def initialize_sim(self):
         self.create_nodes()
         self.create_routes()
+        self.assign_operating_routes()
         self.set_bus_hyperparameter()
         self.create_bus_dispatcher()
         self.create_passenger_dispatcher()
@@ -225,6 +236,8 @@ class Sim_Controller:
     def run_sim(self):
         self.simulated_time = self.tick
         while self.simulated_time < self.duration:
+            if self.simulated_time == 595: 
+                if 1 == 1:print()
             self.update_intersections()
             self.check_bus_dispatcher()
             self.check_passenger_dispatcher()
@@ -234,23 +247,15 @@ class Sim_Controller:
             self.check_bus_node_transfer()
             self.remove_exited_buses()
             self.simulated_time += self.tick
-        print(self.completed_buses)
+        print(f"FINITO{self.completed_buses}")
 #region Debug
     def debug(self):
-        self.create_nodes()
-        self.create_routes()
-        self.set_bus_hyperparameter()
-        self.create_bus_dispatcher()
+        self.initialize_sim()
         self.clear_bus_dispatcher()
-        self.create_passenger_dispatcher()
-        self.populate_stops()
-        self.initialize_queue_length()
-        self.set_bus_star_mark() 
-
-
         self.run_sim()
         pass
 
     def clear_bus_dispatcher(self):
         self.bus_dispatcher = [self.bus_dispatcher[0]]
+
 #endregion Debug
