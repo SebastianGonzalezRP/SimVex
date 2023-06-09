@@ -8,7 +8,7 @@ class Stop(Node):
         self.n_platform = n_platform
 
         self.passengers_boarding_queue = {} #Dictionary with the Route Label, and passengers queue
-        self.bus_operational_queue =[None for i in range(self.n_platform)]
+        self.bus_operational_queue =[None for i in range(n_platform)]
         self.bus_waiting_queue = []
 
 
@@ -19,7 +19,7 @@ class Stop(Node):
     #Passenger in this Stop boarding a Bus
     def leaving_passenger(self,passenger):
         passenger_route = passenger.route.id
-        del self.passengers_boarding_queue[passenger_route][passenger]
+        del self.passengers_boarding_queue[passenger_route](passenger)
 
 
     def build_passenger_boarding_queue(self, passenger_list):
@@ -55,24 +55,31 @@ class Stop(Node):
             print("Bus Is Not In The Stop Operational Queue")
 
     def reorganize_queues(self):
-        spaces_operational_queue = self.bus_operational_queue.count(None)
-        if spaces_operational_queue > 0:
-            split_index = self.first_available_operational_queue_spot()
+        if sum(1 for spot in self.bus_waiting_queue if spot is not None) > 0:
+            spaces_operational_queue = self.bus_operational_queue.count(None)
+            if spaces_operational_queue > 0:
+                split_index = self.first_available_operational_queue_spot()
 
-            slice1 = self.bus_operational_queue[:split_index]
-            slice2 = self.bus_operational_queue[split_index:]
+                slice1 = self.bus_operational_queue[:split_index]
+                slice2 = self.bus_operational_queue[split_index:]
 
-            slice3 = self.bus_waiting_queue[len(slice2):]
-            slice4 = self.bus_waiting_queue[:len(slice2)]
+                slice3 = self.bus_waiting_queue[len(slice2):]
+                slice4 = self.bus_waiting_queue[:len(slice2)]
 
-            self.bus_operational_queue = slice1 + slice3
-            self.bus_waiting_queue = slice4 + slice2
+                self.bus_operational_queue = slice1 + slice3
+                self.bus_waiting_queue = slice4 + slice2
 
 
     def first_available_operational_queue_spot(self):
         for i, item in reversed(list(enumerate(self.bus_operational_queue))):
             if item is not None:
                 return i + 1
+        return 0
+    
+    def last_occupied_queue_spot(self):
+        for i, item in reversed(list(enumerate(self.bus_waiting_queue))):
+            if item is not None:
+                return i
         return 0
 
     def add_route(self,route):
