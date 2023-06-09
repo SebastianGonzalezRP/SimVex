@@ -77,6 +77,12 @@ class Intersection(Node):
                 return i + 1
         return 0
     
+    def last_occupied_queue_spot(self):
+        for i, item in reversed(list(enumerate(self.bus_waiting_queue))):
+            if item is not None:
+                return i
+        return 0
+    
     def broadcast_green(self):
         for bus in self.bus_waiting_queue:
             if bus != None:
