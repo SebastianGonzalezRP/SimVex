@@ -1,3 +1,4 @@
+from models.nodes.start import Start
 from models.nodes.stop import Stop
 from models.nodes.intersection import Intersection
 from models.nodes.street import Street
@@ -52,13 +53,13 @@ class Bus:
         #Isolate all passengers descending in next node (Stop)
         alighting_passengers = []
         for passenger in self.passengers:
-            if passenger.destiny == self.next_node:
-                alighting_passengers.append[passenger]
+            if passenger.destiny == self.next_node.id:
+                alighting_passengers.append(passenger)
 
         if (self.door_n == 1):
             self.alighting_queues = alighting_passengers
         else:
-            quotient, remainder = divmod(len(self.passengers), self.door_n - 1)
+            quotient, remainder = divmod(len(alighting_passengers), self.door_n - 1)
             parts = []
             index = 0
             for i in range(self.door_n - 1):
@@ -66,7 +67,7 @@ class Bus:
                     size = quotient + 1
                 else:
                     size = quotient
-                parts.append(self.passengers[index:index + size])
+                parts.append(alighting_passengers[index:index + size])
                 index += size
             self.alighting_queues = parts
 
@@ -111,11 +112,13 @@ class Bus:
                     self.check_stop_flag = True
 
     def update_breaking_point(self):
-        breaking_distance = (self.speed**2)/(2*self.desc)
-        last_stationary_bus_position = self.next_node.last_occupied_queue_spot()
+        if type(self.next_node) in [Stop, Intersection]:
+            breaking_distance = (self.speed**2)/(2*self.desc)
+            last_stationary_bus_position = self.next_node.last_occupied_queue_spot()
 
-        #TODO: 15 meters as in the dimension of a bus + some clearance space
-        self.breaking_point = self.location.length - (breaking_distance + (15 * last_stationary_bus_position))
+            self.breaking_point = self.location.length - (breaking_distance + (15 * last_stationary_bus_position))
+        else:
+            self.breaking_point = 0
 
 
     def should_brake(self):
@@ -207,12 +210,12 @@ class Bus:
         
     
     def go_next_node(self):
-        if type(self.next_node) != Street: #Case Node is at Stop or Intersection
+        if type(self.next_node) in [Stop, Intersection]: #Case Node is at Stop or Intersection
             self.status = "Stationary"
+            self.speed = 0
             self.next_node.arriving_bus(self)
         else:                                       #Case Node is at Street
             self.status = "Accelerating"
-            self.location.departing_bus(self)
         self.position = 0
         self.breaking_point = 0
         self.stop_flag = False
@@ -220,10 +223,11 @@ class Bus:
         self.update_reference_nodes()
 
     def update_reference_nodes(self):
-        self.location = self.next_node
-        self.next_node = self.location.next_node
-        if type(self.next_node) == Stop:
-            self.generate_alighting_queues()
+        if type(self.location) in [Start, Street,Stop,Intersection]:
+            self.location = self.next_node
+            self.next_node = self.location.next_node
+            if type(self.next_node) == Stop:
+                self.generate_alighting_queues()
 
 #endregion Transfer Node Block
 
