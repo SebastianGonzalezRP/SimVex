@@ -1,9 +1,7 @@
 from models.nodes.node import Node  
-from models.nodes.start import Start
 from models.nodes.street import Street
 from models.nodes.stop import Stop
 from models.nodes.intersection import Intersection
-from models.nodes.end import End
 
 def node_generator(node):
     new_node = Node()
