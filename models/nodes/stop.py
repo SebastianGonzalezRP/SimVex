@@ -19,7 +19,7 @@ class Stop(Node):
     #Passenger in this Stop boarding a Bus
     def leaving_passenger(self,passenger):
         passenger_route = passenger.route.id
-        del self.passengers_boarding_queue[passenger_route](passenger)
+        self.passengers_boarding_queue[passenger_route].remove(passenger)
 
 
     def build_passenger_boarding_queue(self, passenger_list):
@@ -42,10 +42,12 @@ class Stop(Node):
             for index, spot in enumerate(self.bus_operational_queue):
                 if spot == None:
                     self.bus_operational_queue[index] = bus
+                    break
         else:
             for index, spot in enumerate(self.bus_waiting_queue):
                 if spot == None:
                     self.bus_waiting_queue[index] = bus
+                    break
         
     def departing_bus(self, bus):
         try:

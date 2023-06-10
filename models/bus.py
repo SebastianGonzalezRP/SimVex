@@ -56,8 +56,8 @@ class Bus:
             if passenger.destiny == self.next_node.id:
                 alighting_passengers.append(passenger)
 
-        if (self.door_n == 1):
-            self.alighting_queues = alighting_passengers
+        if (self.door_n <= 2):
+            self.alighting_queues = [alighting_passengers]
         else:
             quotient, remainder = divmod(len(alighting_passengers), self.door_n - 1)
             parts = []
@@ -191,8 +191,16 @@ class Bus:
 
 #endregion
 
-#region Intersection Method
+#region Log
+    def update_log_speed(self):
+        self.log_speed.append(self.speed)
 
+    def update_log_time(self, tick):
+        self.time_log += tick
+
+    def update_log(self,tick):
+        self.update_log_speed()
+        self.update_log_time(tick)
 #endregion
 
 #region Transfer Node Block
