@@ -214,13 +214,15 @@ class Sim_Controller:
                 if position >= node_length:
                     bus.node_transition()
 
+    def update_simulated_buses_log(self):
+        for bus in self.simulated_buses:
+            bus.update_log(self.tick)
+
     def remove_exited_buses(self):
         for bus in self.simulated_buses[:]:
             if bus.location == self.transit_network.network[-1]:
                 self.simulated_buses.remove(bus)
                 self.completed_buses.append(bus)
-
-
 
 #MainLoop Functions
     def initialize_sim(self):
@@ -244,17 +246,23 @@ class Sim_Controller:
             self.update_buses_at_stops()
             self.update_buses_at_intersections()
             self.check_bus_node_transfer()
+            self.update_simulated_buses_log()
             self.remove_exited_buses()
             self.simulated_time += self.tick
-        print(f"FINITO{self.completed_buses}")
+
 #region Debug
     def debug(self):
         self.initialize_sim()
-        self.clear_bus_dispatcher()
+        #self.clear_bus_dispatcher()
         self.run_sim()
         pass
 
     def clear_bus_dispatcher(self):
         self.bus_dispatcher = [self.bus_dispatcher[0]]
 
+    def get_results(self):
+        speeds = []
+        for bus in self.completed_buses:
+            speeds.append(bus.speed_log)
+        return speeds
 #endregion Debug
