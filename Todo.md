@@ -1,0 +1,56 @@
+# VEXSIM TODO
+
+---
+- [x] Models 
+  - [x] Nodes
+    - [x] Start
+    - [x] Street
+    - [x] Stop
+    - [x] Intersection
+    - [x] End
+  - [x] Bus
+  - [x] Passenger
+  - [x] Route
+  - [x] Transit Network
+---
+- [ ] GUI
+  - [ ] Input Module
+      - [ ] Create New
+        - [x] Node Definition And Creation
+        - [x] Route Definition And Creation
+        - [ ] Stops Configuration
+        - [ ] Route Configuration
+        - [ ] Passenger Configuration
+      - [ ] Re-Use Generator File
+      - [ ] Load Existing Files
+  - [ ] GUI Controller
+  - [ ] Output Module
+
+---
+- [x] Controllers
+  - [x] Stop Controller
+  - [x] Transit Controller
+  - [x] Intersection Controller
+  - [x] Simulation Controller
+---
+- [ ] Statistical Module
+  - [ ] Datos Generales de Simulacion
+    - [ ] Nº Rutas Simuladas
+    - [ ] N Paraderos Simulados
+    - [ ] Distancia Simulada
+    - [ ] Tiempo Simulado
+    - [ ] Demanda de Embarque
+    - [ ] Demanda de Bajada
+  - [ ] Resultados de Simulacion
+    - [ ] Espera Promedio Pasajero
+    - [ ] Pasajero Promedio en Anden
+    - [ ] Demora Promedio Por Transferencia Por Bus
+    - [ ] Velocidad Comercial Por Bus
+    - [ ] Distribucion Velocidad Comercial Por Ruta
+    - [ ] Distribucion Velocidad Comercial 
+---
+- [ ] File System
+  - [ ] File Generation
+    - [ ] Generator File (.json)
+    - [x] Passenger Dispatcher (.csv)
+    - [x] Bus Dispatcher (.csv)
