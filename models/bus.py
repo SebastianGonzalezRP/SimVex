@@ -193,7 +193,7 @@ class Bus:
 
 #region Log
     def update_log_speed(self):
-        self.log_speed.append(self.speed)
+        self.speed_log.append(self.speed)
 
     def update_log_time(self, tick):
         self.time_log += tick
@@ -219,9 +219,10 @@ class Bus:
     
     def go_next_node(self):
         if type(self.next_node) in [Stop, Intersection]: #Case Node is at Stop or Intersection
-            self.status = "Stationary"
-            self.speed = 0
-            self.next_node.arriving_bus(self)
+            if self.stop_flag:
+                self.status = "Stationary"
+                self.speed = 0
+                self.next_node.arriving_bus(self)
         else:                                       #Case Node is at Street
             self.status = "Accelerating"
         self.position = 0
