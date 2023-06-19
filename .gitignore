@@ -3,8 +3,7 @@
 *.csv
 *.json
 Sample.py
-*.png
-Todo.md
+
 
 
 # Byte-compiled / optimized / DLL files
