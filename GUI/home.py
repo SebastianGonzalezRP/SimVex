@@ -152,34 +152,19 @@ def submit_nodes(self, nodes_list):
     nodes = []
     for node in nodes_list.winfo_children():
         node_type = node.winfo_children()[1].get()
-        if node_type == "Street":
-            street_length = node.winfo_children()[3].get()
-            street_tracks = node.winfo_children()[5].get()
-            if street_length != "" and street_tracks != "":
-                nodes.append(node_parser(node_type, street_length, street_tracks))
-            else:
-                tk.messagebox.showinfo(" ",f"{node_type} Attribute may not be Empty")
-                break
-        elif node_type == "Stop":
-            stop_id = node.winfo_children()[3].get()
-            n_berths = node.winfo_children()[5].get()
-            if stop_id != "" and n_berths != "":
-                nodes.append(node_parser(node_type, stop_id, n_berths))
-            else:
-                tk.messagebox.showinfo(" ",f"{node_type} Attribute may not be Empty")
-                break
-        elif node_type == "Intersection":
-            cicle = node.winfo_children()[3].get()
-            effective_g = node.winfo_children()[5].get()
-            if cicle != "" and effective_g != "":
-                nodes.append(node_parser(node_type, cicle, effective_g))
-            else:
-                tk.messagebox.showinfo(" ",f"{node_type} Attribute may not be Empty")
-                break
+        node_attribute_1 = node.winfo_children()[3].get()
+        node_attribute_2 = node.winfo_children()[5].get()
+        if node_attribute_1 != "" and node_attribute_2 != "":
+                nodes.append(node_parser(node_type, node_attribute_1, node_attribute_2))
+        else:
+            tk.messagebox.showinfo(" ",f"{node_type} Attribute may not be Empty")
+            break
+        
     if (len(nodes) == len(nodes_list.winfo_children())):
         self.generator["Node"] = nodes
         print(self.generator)
         self.load_route_creator()
+
 #endregion
 
 #region Route Creator
@@ -250,6 +235,10 @@ def submit_routes(self, route_list):
 
 #region Stop Configuration
 def create_stop_container(self,stop_list):
+
+    pass
+
+def submit_config(self, stop_list):
 
     pass
 
@@ -389,6 +378,8 @@ class InputView():
         stop_list = tk.Frame(main_panel)
         stop_list.pack(side="top",fill='both', expand=True, padx=5, pady=5)
 
+        submit_stop_config_button = tk.Button(main_panel, text="Submit Routes",command=lambda: submit_config(self, stop_list))
+        submit_stop_config_button.pack(side="bottom", fill="x", pady=5, padx=5)
 
         pass
 
