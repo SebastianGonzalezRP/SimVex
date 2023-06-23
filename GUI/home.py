@@ -434,18 +434,44 @@ def update_existing_stop_config(self, stop_config_container, distribution):
     elif distribution == "Fixed":
         load_fixed_stop_config_container(self, stop_config_container,route_id,stop_id)
 
-def stop_config_parser(self, stop_list):
-
+def stop_config_parser(container):    
+    distribution  = container.winfo_children()[5].get()
+    if distribution == "Exponencial":
+        rate = container.winfo_children()[7].get()
+        return {distribution:{"rate":rate}}
+    elif distribution == "Uniform":
+        a_value = container.winfo_children()[7].get()
+        b_value = container.winfo_children()[9].get()
+        return {distribution:{"a":a_value,"b":b_value}}
+    elif distribution == "Normal":
+        mu = container.winfo_children()[7].get()
+        stdv = container.winfo_children()[9].get()
+        return {distribution:{"mu":mu,"stdv":stdv}}
+    elif distribution == "Fixed":
+        rate = container.winfo_children()[7].get()
+        return {distribution:{"rate":rate}}
     pass
 
 
-def submit_config(self, stop_list):
-
-    pass
+def submit_stop_config(self, stop_list):
+    for container in stop_list.winfo_children():
+        distribution = stop_config_parser(container)
+        route_id = container.winfo_children()[1]["text"]
+        stop_id = container.winfo_children()[3]["text"]
+        self.generator["Route"][route_id]["stops"][stop_id]["passenger_rate"] = distribution
+        print(self.generator["Route"])
+    self.load_route_conf()
 
 #endregion
 
 #region Route Configuration
+def create_route_conf_container(self,route_list,_route_id):
+
+    pass
+
+def submit_route_config(self, route_list):
+    pass
+
 #endregion
 
 #region Passenger Configuration
@@ -592,7 +618,7 @@ class InputView():
             for stop_id in stops:
                 create_stop_config_container(self,stop_list,route_id,stop_id)
 
-        submit_stop_config_button = tk.Button(main_panel, text="Submit Routes",command=lambda: submit_config(self, stop_list))
+        submit_stop_config_button = tk.Button(main_panel, text="Submit Routes",command=lambda: submit_stop_config(self, stop_list))
         submit_stop_config_button.pack(side="bottom", fill="x", pady=5, padx=5)
 
         pass
@@ -600,6 +626,8 @@ class InputView():
     def load_route_conf(self):
         self.update_side_panel_activity(3)
         self.frame.winfo_children()[1].destroy()
+
+        
         pass
 
     def load_passenger_conf(self):
