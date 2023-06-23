@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
+#Thisa mess, would redo, deal with it.
+
 grey1 = "#D4D4D4"
 grey2 = "#B4B4B4"
 grey3 = "#909090"
@@ -250,7 +252,7 @@ def create_stop_config_container(self,stop_list,_route_id, _stop_id):
 
     distribution_selector = ttk.Combobox(stop_container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
     distribution_selector.set("Exponencial")
-    distribution_selector.bind('<<ComboboxSelected>>', lambda event: distribution_selector_change(self, distribution_selector))
+    distribution_selector.bind('<<ComboboxSelected>>', lambda event: stop_distribution_selector_change(self, distribution_selector))
     distribution_selector.grid(row=1, column=3, padx=5, pady=5, sticky='nsew')
 
     rate_label = tk.Label(stop_container,text="Distribution Rate exp(rate)", bg=grey3, font=('Segoe 12'))
@@ -284,7 +286,7 @@ def load_exponencial_stop_config_container(self,stop_container,_route_id, _stop_
 
     distribution_selector = ttk.Combobox(stop_container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
     distribution_selector.set("Exponencial")
-    distribution_selector.bind('<<ComboboxSelected>>', lambda event: distribution_selector_change(self, distribution_selector))
+    distribution_selector.bind('<<ComboboxSelected>>', lambda event: stop_distribution_selector_change(self, distribution_selector))
     distribution_selector.grid(row=1, column=3, padx=5, pady=5, sticky='nsew')
 
     rate_label = tk.Label(stop_container,text="Distribution Rate exp(rate)", bg=grey3, font=('Segoe 12'))
@@ -318,7 +320,7 @@ def load_uniform_stop_config_container(self,stop_container,_route_id, _stop_id):
 
     distribution_selector = ttk.Combobox(stop_container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
     distribution_selector.set("Uniform")
-    distribution_selector.bind('<<ComboboxSelected>>', lambda event: distribution_selector_change(self, distribution_selector))
+    distribution_selector.bind('<<ComboboxSelected>>', lambda event: stop_distribution_selector_change(self, distribution_selector))
     distribution_selector.grid(row=1, column=3, padx=5, pady=5, sticky='nsew')
 
     a_label = tk.Label(stop_container,text="A", bg=grey3, font=('Segoe 12'))
@@ -359,7 +361,7 @@ def load_normal_stop_config_container(self,stop_container,_route_id, _stop_id):
 
     distribution_selector = ttk.Combobox(stop_container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
     distribution_selector.set("Normal")
-    distribution_selector.bind('<<ComboboxSelected>>', lambda event: distribution_selector_change(self, distribution_selector))
+    distribution_selector.bind('<<ComboboxSelected>>', lambda event: stop_distribution_selector_change(self, distribution_selector))
     distribution_selector.grid(row=1, column=3, padx=5, pady=5, sticky='nsew')
 
     mu_label = tk.Label(stop_container,text="Mean", bg=grey3, font=('Segoe 12'))
@@ -400,7 +402,7 @@ def load_fixed_stop_config_container(self,stop_container,_route_id, _stop_id):
 
     distribution_selector = ttk.Combobox(stop_container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
     distribution_selector.set("Fixed")
-    distribution_selector.bind('<<ComboboxSelected>>', lambda event: distribution_selector_change(self, distribution_selector))
+    distribution_selector.bind('<<ComboboxSelected>>', lambda event: stop_distribution_selector_change(self, distribution_selector))
     distribution_selector.grid(row=1, column=3, padx=5, pady=5, sticky='nsew')
 
     rate_label = tk.Label(stop_container,text="Arrival Rate", bg=grey3, font=('Segoe 12'))
@@ -415,7 +417,7 @@ def load_fixed_stop_config_container(self,stop_container,_route_id, _stop_id):
     stop_container.columnconfigure(3, weight=2)
     stop_container.columnconfigure(4, weight=1)
 
-def distribution_selector_change(self, distribution_selector):
+def stop_distribution_selector_change(self, distribution_selector):
     selection = distribution_selector.get()
     stop_config_container_path = distribution_selector.winfo_parent()
     stop_config_container = self.root.nametowidget(stop_config_container_path)
@@ -450,8 +452,6 @@ def stop_config_parser(container):
     elif distribution == "Fixed":
         rate = container.winfo_children()[7].get()
         return {distribution:{"rate":rate}}
-    pass
-
 
 def submit_stop_config(self, stop_list):
     for container in stop_list.winfo_children():
@@ -466,11 +466,201 @@ def submit_stop_config(self, stop_list):
 
 #region Route Configuration
 def create_route_conf_container(self,route_list,_route_id):
+    stop_container = tk.Frame(route_list, height=100, bg=grey3)
+    stop_container.pack(anchor='n', fill='x', padx=5, pady=5,)
 
-    pass
+    route_label = tk.Label(stop_container, text="Route ID:",bg=grey3, font=('Segoe 12') )
+    route_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+
+    route_id = tk.Label(stop_container, text=_route_id, bg=grey3, font=('Segoe 12'))
+    route_id.grid(row=0, column=1, padx=5, pady=5, sticky='we')
+
+    distribution_label = tk.Label(stop_container,text="Distribution", bg=grey3, font=('Segoe 12'))
+    distribution_label.grid(row=0, column=3, padx=5, pady=5, sticky='nswe')
+
+    distribution_selector = ttk.Combobox(stop_container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
+    distribution_selector.set("Exponencial")
+    distribution_selector.bind('<<ComboboxSelected>>', lambda event: route_distribution_selector_change(self, distribution_selector))
+    distribution_selector.grid(row=1, column=3, padx=5, pady=5, sticky='nsew')
+
+    rate_label = tk.Label(stop_container,text="Distribution Rate exp(rate)", bg=grey3, font=('Segoe 12'))
+    rate_label.grid(row=0, column=4, padx=5, pady=5, sticky='nswe')
+
+    rate_field = tk.Entry(stop_container)
+    rate_field.grid(row=1, column=4, padx=5, pady=5, sticky='nswe')
+
+    stop_container.columnconfigure(0, weight=0)
+    stop_container.columnconfigure(1, weight=0)
+    stop_container.columnconfigure(2, weight=1)
+    stop_container.columnconfigure(3, weight=2)
+    stop_container.columnconfigure(4, weight=1)
+
+def load_exponencial_route_config_container(self,route_container,_route_id):
+    
+    route_label = tk.Label(route_container, text="Route ID:",bg=grey3, font=('Segoe 12') )
+    route_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+
+    route_id = tk.Label(route_container, text=_route_id, bg=grey3, font=('Segoe 12'))
+    route_id.grid(row=0, column=1, padx=5, pady=5, sticky='we')
+
+    distribution_label = tk.Label(route_container,text="Distribution", bg=grey3, font=('Segoe 12'))
+    distribution_label.grid(row=0, column=3, padx=5, pady=5, sticky='nswe')
+
+    distribution_selector = ttk.Combobox(route_container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
+    distribution_selector.set("Exponencial")
+    distribution_selector.bind('<<ComboboxSelected>>', lambda event: route_distribution_selector_change(self, distribution_selector))
+    distribution_selector.grid(row=1, column=3, padx=5, pady=5, sticky='nsew')
+
+    rate_label = tk.Label(route_container,text="Distribution Rate exp(rate)", bg=grey3, font=('Segoe 12'))
+    rate_label.grid(row=0, column=4, padx=5, pady=5, sticky='nswe')
+
+    rate_field = tk.Entry(route_container)
+    rate_field.grid(row=1, column=4, padx=5, pady=5, sticky='nswe')
+
+    route_container.columnconfigure(0, weight=0)
+    route_container.columnconfigure(1, weight=0)
+    route_container.columnconfigure(2, weight=1)
+    route_container.columnconfigure(3, weight=2)
+    route_container.columnconfigure(4, weight=1)
+
+def load_uniform_route_config_container(self,route_container,_route_id):
+
+    route_label = tk.Label(route_container, text="Route ID:",bg=grey3, font=('Segoe 12') )
+    route_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+
+    route_id = tk.Label(route_container, text=_route_id, bg=grey3, font=('Segoe 12'))
+    route_id.grid(row=0, column=1, padx=5, pady=5, sticky='we')
+
+    distribution_label = tk.Label(route_container,text="Distribution", bg=grey3, font=('Segoe 12'))
+    distribution_label.grid(row=0, column=3, padx=5, pady=5, sticky='nswe')
+
+    distribution_selector = ttk.Combobox(route_container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
+    distribution_selector.set("Uniform")
+    distribution_selector.bind('<<ComboboxSelected>>', lambda event: route_distribution_selector_change(self, distribution_selector))
+    distribution_selector.grid(row=1, column=3, padx=5, pady=5, sticky='nsew')
+
+    a_label = tk.Label(route_container,text="A", bg=grey3, font=('Segoe 12'))
+    a_label.grid(row=0, column=4, padx=5, pady=5, sticky='nswe')
+
+    a_field = tk.Entry(route_container)
+    a_field.grid(row=1, column=4, padx=5, pady=5, sticky='nswe')
+
+    b_label = tk.Label(route_container,text="B", bg=grey3, font=('Segoe 12'))
+    b_label.grid(row=0, column=5, padx=5, pady=5, sticky='nswe')
+
+    b_field = tk.Entry(route_container)
+    b_field.grid(row=1, column=5, padx=5, pady=5, sticky='nswe')
+
+    route_container.columnconfigure(0, weight=0)
+    route_container.columnconfigure(1, weight=0)
+    route_container.columnconfigure(2, weight=1)
+    route_container.columnconfigure(3, weight=2)
+    route_container.columnconfigure(4, weight=1)
+    route_container.columnconfigure(5, weight=1)
+
+def load_normal_route_config_container(self,route_container,_route_id):
+    route_label = tk.Label(route_container, text="Route ID:",bg=grey3, font=('Segoe 12') )
+    route_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+
+    route_id = tk.Label(route_container, text=_route_id, bg=grey3, font=('Segoe 12'))
+    route_id.grid(row=0, column=1, padx=5, pady=5, sticky='we')
+
+    distribution_label = tk.Label(route_container,text="Distribution", bg=grey3, font=('Segoe 12'))
+    distribution_label.grid(row=0, column=3, padx=5, pady=5, sticky='nswe')
+
+    distribution_selector = ttk.Combobox(route_container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
+    distribution_selector.set("Normal")
+    distribution_selector.bind('<<ComboboxSelected>>', lambda event: route_distribution_selector_change(self, distribution_selector))
+    distribution_selector.grid(row=1, column=3, padx=5, pady=5, sticky='nsew')
+
+    mu_label = tk.Label(route_container,text="Mean", bg=grey3, font=('Segoe 12'))
+    mu_label.grid(row=0, column=4, padx=5, pady=5, sticky='nswe')
+
+    mu_field = tk.Entry(route_container)
+    mu_field.grid(row=1, column=4, padx=5, pady=5, sticky='nswe')
+
+    stdv_label = tk.Label(route_container,text="Standard Deviation", bg=grey3, font=('Segoe 12'))
+    stdv_label.grid(row=0, column=5, padx=5, pady=5, sticky='nswe')
+
+    stdv_field = tk.Entry(route_container)
+    stdv_field.grid(row=1, column=5, padx=5, pady=5, sticky='nswe')
+
+    route_container.columnconfigure(0, weight=0)
+    route_container.columnconfigure(1, weight=0)
+    route_container.columnconfigure(2, weight=1)
+    route_container.columnconfigure(3, weight=2)
+    route_container.columnconfigure(4, weight=1)
+    route_container.columnconfigure(5, weight=1)
+
+def load_fixed_route_config_container(self,route_container,_route_id):
+    route_label = tk.Label(route_container, text="Route ID:",bg=grey3, font=('Segoe 12') )
+    route_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+
+    route_id = tk.Label(route_container, text=_route_id, bg=grey3, font=('Segoe 12'))
+    route_id.grid(row=0, column=1, padx=5, pady=5, sticky='we')
+
+    distribution_label = tk.Label(route_container,text="Distribution", bg=grey3, font=('Segoe 12'))
+    distribution_label.grid(row=0, column=3, padx=5, pady=5, sticky='nswe')
+
+    distribution_selector = ttk.Combobox(route_container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
+    distribution_selector.set("Fixed")
+    distribution_selector.bind('<<ComboboxSelected>>', lambda event: route_distribution_selector_change(self, distribution_selector))
+    distribution_selector.grid(row=1, column=3, padx=5, pady=5, sticky='nsew')
+
+    rate_label = tk.Label(route_container,text="Arrival Rate", bg=grey3, font=('Segoe 12'))
+    rate_label.grid(row=0, column=4, padx=5, pady=5, sticky='nswe')
+
+    rate_field = tk.Entry(route_container)
+    rate_field.grid(row=1, column=4, padx=5, pady=5, sticky='nswe')
+
+    route_container.columnconfigure(0, weight=0)
+    route_container.columnconfigure(1, weight=0)
+    route_container.columnconfigure(2, weight=1)
+    route_container.columnconfigure(3, weight=2)
+    route_container.columnconfigure(4, weight=1)
+
+def route_distribution_selector_change(self, distribution_selector):
+    selection = distribution_selector.get()
+    route_config_container_path = distribution_selector.winfo_parent()
+    route_config_container = self.root.nametowidget(route_config_container_path)
+    update_existing_route_config(self, route_config_container, selection)
+
+def update_existing_route_config(self, route_config_container, distribution):
+    route_id= route_config_container.winfo_children()[1]["text"]
+    destroy_frame_children(route_config_container)
+    if distribution == "Exponencial":
+        load_exponencial_route_config_container(self, route_config_container,route_id)
+    elif distribution == "Uniform":
+        load_uniform_route_config_container(self, route_config_container,route_id)
+    elif distribution == "Normal":
+        load_normal_route_config_container(self, route_config_container,route_id)
+    elif distribution == "Fixed":
+        load_fixed_route_config_container(self, route_config_container,route_id)
+
+def route_config_parser(container):
+    distribution  = container.winfo_children()[3].get()
+    if distribution == "Exponencial":
+        rate = container.winfo_children()[5].get()
+        return {distribution:{"rate":rate}}
+    elif distribution == "Uniform":
+        a_value = container.winfo_children()[5].get()
+        b_value = container.winfo_children()[7].get()
+        return {distribution:{"a":a_value,"b":b_value}}
+    elif distribution == "Normal":
+        mu = container.winfo_children()[5].get()
+        stdv = container.winfo_children()[7].get()
+        return {distribution:{"mu":mu,"stdv":stdv}}
+    elif distribution == "Fixed":
+        rate = container.winfo_children()[5].get()
+        return {distribution:{"rate":rate}}
 
 def submit_route_config(self, route_list):
-    pass
+    for container in route_list.winfo_children():
+        distribution = route_config_parser(container)
+        route_id = container.winfo_children()[1]["text"]
+        self.generator["Route"][route_id]["bus_rate"] = distribution
+        print(self.generator["Route"])
+    self.load_passenger_conf()
 
 #endregion
 
@@ -607,7 +797,7 @@ class InputView():
         main_panel = tk.Frame(self.frame, bg=grey2)
         main_panel.pack(side="right", fill="both", padx=5, pady=5, expand=True)
 
-        title_label = tk.Label(main_panel, bg=grey2, text="Passenger Arrival Configuration", font=('Segoe 14'))
+        title_label = tk.Label(main_panel, bg=grey2, text="Stop Passenger Arrival Configuration", font=('Segoe 14'))
         title_label.pack(side="top", fill="x", padx=5, pady=5)
 
         stop_list = tk.Frame(main_panel)
@@ -621,17 +811,27 @@ class InputView():
         submit_stop_config_button = tk.Button(main_panel, text="Submit Routes",command=lambda: submit_stop_config(self, stop_list))
         submit_stop_config_button.pack(side="bottom", fill="x", pady=5, padx=5)
 
-        pass
-
     def load_route_conf(self):
         self.update_side_panel_activity(3)
         self.frame.winfo_children()[1].destroy()
 
-        
-        pass
+        main_panel = tk.Frame(self.frame, bg=grey2)
+        main_panel.pack(side="right", fill="both", padx=5, pady=5, expand=True)
+
+        title_label = tk.Label(main_panel, bg=grey2, text="Route Bus Arrival Configuration", font=('Segoe 14'))
+        title_label.pack(side="top", fill="x", padx=5, pady=5)
+
+        route_list = tk.Frame(main_panel)
+        route_list.pack(side="top",fill='both', expand=True, padx=5, pady=5)
+
+        for route_id in self.generator["Route"].keys():
+            create_route_conf_container(self,route_list,route_id)
+
+        submit_route_config_button = tk.Button(main_panel, text="Submit Routes",command=lambda: submit_route_config(self, route_list))
+        submit_route_config_button.pack(side="bottom", fill="x", pady=5, padx=5)
 
     def load_passenger_conf(self):
-        self.update_side_panel_activity(5)
+        self.update_side_panel_activity(4)
         self.frame.winfo_children()[1].destroy()
         pass
      

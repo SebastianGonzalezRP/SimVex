@@ -10,10 +10,10 @@ def random_value(distribution, attributes):
             value = random.exponential(attributes["rate"])
         elif distribution == "Uniform":
             value = random.uniform(attributes["a"],attributes["b"])
-        elif distribution == "Fixed":
-            value = attributes["rate"]
         elif distribution == "Normal":
             value = random.normal(attributes["mu"],attributes["stdv"])
+        elif distribution == "Fixed":
+            value = attributes["rate"]
         return round(value)
 
 def sort_file(data,sort_index):
