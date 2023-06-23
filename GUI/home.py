@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
+import configparser
 
 #Thisa mess, would redo, deal with it.
 
@@ -461,7 +462,6 @@ def submit_stop_config(self, stop_list):
         self.generator["Route"][route_id]["stops"][stop_id]["passenger_rate"] = distribution
         print(self.generator["Route"])
     self.load_route_conf()
-
 #endregion
 
 #region Route Configuration
@@ -661,10 +661,11 @@ def submit_route_config(self, route_list):
         self.generator["Route"][route_id]["bus_rate"] = distribution
         print(self.generator["Route"])
     self.load_passenger_conf()
-
 #endregion
 
 #region Passenger Configuration
+
+
 #endregion
 
 #=================================App Class=======================================#
@@ -676,13 +677,18 @@ class InputView():
         self.root.title("VexSim")
         self.root.resizable(False,False)
         self.frame = None
+
+        config = configparser.ConfigParser()
+        config.read(".config")
         self.generator = {
         "Time":{
-            "Duration": 3600,
-            "Tick": 0.5},
+            "Duration": config.get('SimTime', 'sim_duration'),
+            "Tick": config.get('SimTime', 'sim_tick')},
         "Node":[],
         "Route":{},
-        "Buses":{},
+        "Buses":{"top_speed": config.get('Buses', 'top_speed'), 
+                 "acc":config.get('Buses', 'acceleration'),
+                 "desc":config.get('Buses', 'deceleration')},
         "Passengers":{}}
         self.load_main_view()
 
@@ -833,6 +839,21 @@ class InputView():
     def load_passenger_conf(self):
         self.update_side_panel_activity(4)
         self.frame.winfo_children()[1].destroy()
+
+        main_panel = tk.Frame(self.frame, bg=grey2)
+        main_panel.pack(side="right", fill="both", padx=5, pady=5, expand=True)
+
+        title_label = tk.Label(main_panel, bg=grey2, text="Initial Passenger Occupancy Configuration", font=('Segoe 14'))
+        title_label.pack(side="top", fill="x", padx=5, pady=5)
+
+        route_list = tk.Frame(main_panel)
+        route_list.pack(side="top",fill='both', expand=True, padx=5, pady=5)
+
+        for route_id in self.generator["Route"].keys():
+            create_route_conf_container(self,route_list,route_id)
+
+        submit_route_config_button = tk.Button(main_panel, text="Submit Routes",command=lambda: submit_route_config(self, route_list))
+        submit_route_config_button.pack(side="bottom", fill="x", pady=5, padx=5)
         pass
      
 #endregion
