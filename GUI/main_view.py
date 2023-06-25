@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import filedialog
 from tkinter import ttk
 import configparser
 
-#Thisa mess, would redo, deal with it.
 
 grey1 = "#D4D4D4"
 grey2 = "#B4B4B4"
@@ -17,8 +17,6 @@ window_height = 800
 def destroy_frame_children(frame):
     for child in frame.winfo_children():
         child.destroy()
-
-#"Exponencial","Uniform","Normal","Fixed"
  
 def load_exponencial_template(container):
     distribution_label = tk.Label(container,text="Distribution", bg=grey3, font=('Segoe 12'))
@@ -492,19 +490,26 @@ def submit_passenger_occupancy_config(self, route_list):
 #endregion
 
 def submit_generator_file(self):
+    
     print(self.generator)
     print("HABIBI")
-    pass
+    self.root.destroy()
+
+def open_file_dialog(self):
+    file_path = filedialog.askopenfilename(initialdir="files", title="Select File")
+    if file_path:
+        print("Selected File:", file_path)
 
 #=================================App Class=======================================#
-#region InputView
-class InputView():
-    def __init__(self):
-        self.root = tk.Tk()
+#region MainView
+class MainView():
+    def __init__(self, controller):
+        self.root = controller.root
         self.root.geometry("400x400")
         self.root.title("VexSim")
         self.root.resizable(False,False)
         self.frame = None
+        self.controller = controller
 
         config = configparser.ConfigParser()
         config.read(".config")
@@ -518,6 +523,8 @@ class InputView():
                  "acc":config.get('Buses', 'acceleration'),
                  "desc":config.get('Buses', 'deceleration')},
         "Passenger":{}}
+        self.passenger_dispatcher = None
+        self.bus_dispatcher = None
         self.load_main_view()
 
 #region Main View
@@ -720,7 +727,20 @@ class InputView():
         pass
 #endregion
 #region Reuse Generator File 
+
     def load_reuse(self):
+        self.frame.destroy()
+        self.root.geometry("400x600")
+
+        self.frame = tk.Frame(self.root, background=grey1)
+        self.frame.pack(padx = 5, pady = 5, fill = 'both', expand = True)
+
+        select_button = tk.Button(self.frame, text="Select File", command=open_file_dialog(self))
+        select_button.pack(pady=10)
+
+        submit_button = tk.Button(self.frame, text="Submit")
+        submit_button.pack(pady=10)
+
         pass
 #endregion
 #region Use Existing Files
@@ -728,10 +748,3 @@ class InputView():
         pass
 #endregion
 #endregion
-
-    
-
-    
-
-app = InputView()
-app.root.mainloop()
