@@ -22,8 +22,8 @@ def load_exponencial_template(container):
     distribution_label = tk.Label(container,text="Distribution", bg=grey3, font=('Segoe 12'))
     distribution_label.grid(row=0, column=0, padx=5, pady=5, sticky='nswe')
 
-    distribution_selector = ttk.Combobox(container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
-    distribution_selector.set("Exponencial")
+    distribution_selector = ttk.Combobox(container, values=["Exponential","Uniform","Normal","Fixed"], width=1)
+    distribution_selector.set("Exponential")
     distribution_selector.bind('<<ComboboxSelected>>', lambda event: distribution_selector_change(container,distribution_selector))
     distribution_selector.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
 
@@ -40,7 +40,7 @@ def load_uniform_template(container):
     distribution_label = tk.Label(container,text="Distribution", bg=grey3, font=('Segoe 12'))
     distribution_label.grid(row=0, column=0, padx=5, pady=5, sticky='nswe')
 
-    distribution_selector = ttk.Combobox(container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
+    distribution_selector = ttk.Combobox(container, values=["Exponential","Uniform","Normal","Fixed"], width=1)
     distribution_selector.set("Uniform")
     distribution_selector.bind('<<ComboboxSelected>>', lambda event: distribution_selector_change(container,distribution_selector))
     distribution_selector.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
@@ -65,7 +65,7 @@ def load_normal_template(container):
     distribution_label = tk.Label(container,text="Distribution", bg=grey3, font=('Segoe 12'))
     distribution_label.grid(row=0, column=0, padx=5, pady=5, sticky='nswe')
 
-    distribution_selector = ttk.Combobox(container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
+    distribution_selector = ttk.Combobox(container, values=["Exponential","Uniform","Normal","Fixed"], width=1)
     distribution_selector.set("Normal")
     distribution_selector.bind('<<ComboboxSelected>>', lambda event: distribution_selector_change(container,distribution_selector))
     distribution_selector.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
@@ -90,7 +90,7 @@ def load_fixed_template(container):
     distribution_label = tk.Label(container,text="Distribution", bg=grey3, font=('Segoe 12'))
     distribution_label.grid(row=0, column=0, padx=5, pady=5, sticky='nswe')
 
-    distribution_selector = ttk.Combobox(container, values=["Exponencial","Uniform","Normal","Fixed"], width=1)
+    distribution_selector = ttk.Combobox(container, values=["Exponential","Uniform","Normal","Fixed"], width=1)
     distribution_selector.set("Fixed")
     distribution_selector.bind('<<ComboboxSelected>>', lambda event: distribution_selector_change(container,distribution_selector))
     distribution_selector.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
@@ -110,7 +110,7 @@ def distribution_selector_change(container, distribution_selector):
     
 def update_existing_distribution_container(distribution_container, distribution):
     destroy_frame_children(distribution_container)
-    if distribution == "Exponencial":
+    if distribution == "Exponential":
         load_exponencial_template(distribution_container)
     elif distribution == "Uniform":
         load_uniform_template(distribution_container)
@@ -121,19 +121,19 @@ def update_existing_distribution_container(distribution_container, distribution)
 
 def distribution_parser(container):
     distribution  = container.winfo_children()[1].get()
-    if distribution == "Exponencial":
-        rate = container.winfo_children()[3].get()
+    if distribution == "Exponential":
+        rate = float(container.winfo_children()[3].get())
         return {distribution:{"rate":rate}}
     elif distribution == "Uniform":
-        a_value = container.winfo_children()[3].get()
-        b_value = container.winfo_children()[5].get()
+        a_value = int(container.winfo_children()[3].get())
+        b_value = int(container.winfo_children()[5].get())
         return {distribution:{"a":a_value,"b":b_value}}
     elif distribution == "Normal":
-        mu = container.winfo_children()[3].get()
-        stdv = container.winfo_children()[5].get()
+        mu = float(container.winfo_children()[3].get())
+        stdv = float(container.winfo_children()[5].get())
         return {distribution:{"mu":mu,"stdv":stdv}}
     elif distribution == "Fixed":
-        rate = container.winfo_children()[3].get()
+        rate = int(container.winfo_children()[3].get())
         return {distribution:{"rate":rate}}
 
 #region Node Creator
@@ -262,11 +262,11 @@ def update_existing_node(self, node_container, node_type):
 
 def node_parser(node_type, value1, value2):
     if node_type == "Street":
-        return {node_type: {"length": value1, "tracks": value2}}
+        return {node_type: {"length": int(value1), "tracks": int(value2)}}
     elif node_type == "Stop":
-        return {node_type: {"id": value1, "berths": value2}}
+        return {node_type: {"id": value1, "berths": int(value2)}}
     elif node_type == "Intersection":
-        return {node_type: {"cicle": value1, "green": value2}}
+        return {node_type: {"cicle": int(value1), "green": float(value2)}}
 
 def submit_nodes(self, nodes_list):
     nodes = []
@@ -490,9 +490,7 @@ def submit_passenger_occupancy_config(self, route_list):
 #endregion
 
 def submit_generator_file(self):
-    
-    print(self.generator)
-    print("HABIBI")
+    self.complete = True
     self.root.destroy()
 
 def open_file_dialog(self):
@@ -503,25 +501,27 @@ def open_file_dialog(self):
 #=================================App Class=======================================#
 #region MainView
 class MainView():
-    def __init__(self, controller):
-        self.root = controller.root
+    def __init__(self):
+        self.root = tk.Tk()
         self.root.geometry("400x400")
         self.root.title("VexSim")
         self.root.resizable(False,False)
         self.frame = None
-        self.controller = controller
+        self.app_mode = None #["new","regenerate","reuse"]
+        self.complete = False
+
 
         config = configparser.ConfigParser()
         config.read(".config")
         self.generator = {
         "Time":{
-            "Duration": config.get('SimTime', 'sim_duration'),
-            "Tick": config.get('SimTime', 'sim_tick')},
+            "Duration": int(config.get('SimTime', 'sim_duration')),
+            "Tick": float(config.get('SimTime', 'sim_tick'))},
         "Node":[],
         "Route":{},
-        "Buses":{"top_speed": config.get('Buses', 'top_speed'), 
-                 "acc":config.get('Buses', 'acceleration'),
-                 "desc":config.get('Buses', 'deceleration')},
+        "Buses":{"top_speed": float(config.get('Buses', 'top_speed')), 
+                 "acc":float(config.get('Buses', 'acceleration')),
+                 "desc":float(config.get('Buses', 'deceleration'))},
         "Passenger":{}}
         self.passenger_dispatcher = None
         self.bus_dispatcher = None
@@ -548,6 +548,7 @@ class MainView():
 #endregion
 #region Create New
     def load_create_new(self):
+        self.app_mode = "new"
         self.frame.destroy()
         self.root.geometry(f"{window_width}x{window_height}")
 
@@ -729,6 +730,7 @@ class MainView():
 #region Reuse Generator File 
 
     def load_reuse(self):
+        self.app_mode = "regenerate"
         self.frame.destroy()
         self.root.geometry("400x600")
 
@@ -740,11 +742,21 @@ class MainView():
 
         submit_button = tk.Button(self.frame, text="Submit")
         submit_button.pack(pady=10)
-
-        pass
 #endregion
 #region Use Existing Files
     def load_existing_file(self):
-        pass
+        self.app_mode = "regenerate"
+        self.frame.destroy()
+        self.root.geometry("400x600")
+
+        self.frame = tk.Frame(self.root, background=grey1)
+        self.frame.pack(padx = 5, pady = 5, fill = 'both', expand = True)
+
+        select_button = tk.Button(self.frame, text="Select File", command=open_file_dialog(self))
+        select_button.pack(pady=10)
+
+        submit_button = tk.Button(self.frame, text="Submit")
+        submit_button.pack(pady=10)
+        
 #endregion
 #endregion
