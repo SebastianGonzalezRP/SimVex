@@ -43,7 +43,8 @@ class Bus_Dispatcher(Dispatcher):
                 door_n = random.randint(1,4)
                 
                 bus = [cumulative_arrival,f"b-{id}",route,door_n]
-                self.to_file.append(bus)
+                if cumulative_arrival<time:
+                    self.to_file.append(bus)
             
                 time -= arrival
     

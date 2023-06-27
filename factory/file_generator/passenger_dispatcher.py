@@ -69,7 +69,8 @@ class Passenger_Dispatcher(Dispatcher):
                 alighting_t = random_value(alighting_distribution,alighting_dist_attributes)
 
                 passenger = [cumulative_arrival,stop,destination,route,boarding_t,alighting_t]
-                self.to_file.append(passenger)
+                if cumulative_arrival<time:
+                    self.to_file.append(passenger)
 
                 time -= arrival
 
