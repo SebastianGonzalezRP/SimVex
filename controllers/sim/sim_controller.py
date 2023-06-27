@@ -3,17 +3,21 @@ from models.transit_network import TransitNetwork as TN
 from models.route import Route
 from factory.bus_factory import *
 from factory.passenger_factory import * 
+import configparser
 
 from factory.file_generator.utils import load_csv, load_json
 
-class Sim_Controller:
-    def __init__(self,generator_path,passenger_dispatch_path,bus_dispatch_path):
-        self.generator = load_json(generator_path)
-        self.passenger_data = load_csv(passenger_dispatch_path)
-        self.bus_data = load_csv(bus_dispatch_path)
+class SimController:
+    def __init__(self):
+        self.generator = None
+        self.passenger_data = None
+        self.bus_data = None
 
-        self.duration = self.generator["Time"]["Duration"]
-        self.tick = self.generator["Time"]["Tick"]
+
+        config = configparser.ConfigParser()
+        config.read(".config")
+        self.duration = int(config.get('SimTime', 'sim_duration'))
+        self.tick = float(config.get('SimTime', 'sim_tick'))
 
         self.transit_network = []
         self.routes = []
@@ -26,6 +30,10 @@ class Sim_Controller:
         self.simulated_buses = []
         self.completed_buses = []
     
+    def load_files_data(self,generator_path,passenger_dispatch_path,bus_dispatch_path):
+        self.generator = load_json(generator_path)
+        self.passenger_data = load_csv(passenger_dispatch_path)
+        self.bus_data = load_csv(bus_dispatch_path)
 
     def create_nodes(self):
         for node in self.generator["Node"]:
@@ -105,9 +113,9 @@ class Sim_Controller:
         bus_route = self.get_route_by_id(bus_data[2])
         boarded_passengers = self.get_boarded_passengers(bus_id)
         door_n = int(bus_data[3])
-        top_speed = int(self.bus_hyperparameter["top_speed"])
-        acc = int(self.bus_hyperparameter["acc"])
-        desc = int(self.bus_hyperparameter["desc"])
+        top_speed = float(self.bus_hyperparameter["top_speed"])
+        acc = float(self.bus_hyperparameter["acc"])
+        desc = float(self.bus_hyperparameter["desc"])
         return [bus_id,bus_route,boarded_passengers,door_n,top_speed,acc,desc]
 
     def create_bus_dispatcher(self):
@@ -211,15 +219,18 @@ class Sim_Controller:
 
 #MainLoop Functions
     def initialize_sim(self):
-        self.create_nodes()
-        self.create_routes()
-        self.assign_operating_routes()
-        self.set_bus_hyperparameter()
-        self.create_bus_dispatcher()
-        self.create_passenger_dispatcher()
-        self.populate_stops()
-        self.initialize_queue_length()
-        self.set_bus_star_mark() 
+        if self.generator != None and self.passenger_data != None and self.bus_data != None:
+            self.create_nodes()
+            self.create_routes()
+            self.assign_operating_routes()
+            self.set_bus_hyperparameter()
+            self.create_bus_dispatcher()
+            self.create_passenger_dispatcher()
+            self.populate_stops()
+            self.initialize_queue_length()
+            self.set_bus_star_mark() 
+        else:
+            raise Exception("Missing Sim Controller Data")
 
     def run_sim(self):
         self.simulated_time = self.tick

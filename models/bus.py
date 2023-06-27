@@ -86,6 +86,7 @@ class Bus:
                 self.status = "Stationary"
             else:
                 self.speed -= self.desc * tick
+        self.speed = round(self.speed,2)
 
     def update_position(self, tick):
         self.position += self.speed * tick
