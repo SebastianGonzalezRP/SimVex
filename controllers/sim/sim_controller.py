@@ -1,17 +1,16 @@
-import json
-import csv
 from factory.node_factory import *
 from models.transit_network import TransitNetwork as TN
 from models.route import Route
 from factory.bus_factory import *
 from factory.passenger_factory import * 
 
+from factory.file_generator.utils import load_csv, load_json
 
 class Sim_Controller:
     def __init__(self,generator_path,passenger_dispatch_path,bus_dispatch_path):
-        self.generator = self.load_json(generator_path)
-        self.passenger_data = self.load_csv(passenger_dispatch_path)
-        self.bus_data = self.load_csv(bus_dispatch_path)
+        self.generator = load_json(generator_path)
+        self.passenger_data = load_csv(passenger_dispatch_path)
+        self.bus_data = load_csv(bus_dispatch_path)
 
         self.duration = self.generator["Time"]["Duration"]
         self.tick = self.generator["Time"]["Tick"]
@@ -27,20 +26,6 @@ class Sim_Controller:
         self.simulated_buses = []
         self.completed_buses = []
     
-
-
-    def load_json(self, path):
-        with open(path, 'r') as file:
-            data = json.load(file)
-        return data
-
-    def load_csv(self, path):
-        data = []
-        with open(path, 'r') as file:
-            csv_reader = csv.reader(file)
-            for line in csv_reader:
-                data.append(line)
-        return data
 
     def create_nodes(self):
         for node in self.generator["Node"]:
