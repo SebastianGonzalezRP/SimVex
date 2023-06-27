@@ -33,7 +33,7 @@ if __name__ == "__main__":
             VS.bus_dispatcher_path = f"files/{VS.serial}/bus_dispatcher.csv"
             VS.passenger_dispatcher_path = f"files/{VS.serial}/passenger_dispatcher.csv"
         elif app_mode == "regenerate":
-            result = VS.gui.generator
+            generator = VS.gui.generator
             pass
         elif app_mode == "reuse":
             pass

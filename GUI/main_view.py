@@ -493,10 +493,14 @@ def submit_generator_file(self):
     self.complete = True
     self.root.destroy()
 
-def open_file_dialog(self):
-    file_path = filedialog.askopenfilename(initialdir="files", title="Select File")
+def submit_regeneration_file(self,container):
+    self.complete = True
+
+def open_file_dialog(field):
+    file_path = filedialog.askopenfilename(initialdir="files", title="Select File", filetypes=[("Json Files", "*.json")])
     if file_path:
-        print("Selected File:", file_path)
+        field.delete(0,tk.END)        
+        field.insert(0,file_path)
 
 #=================================App Class=======================================#
 #region MainView
@@ -732,20 +736,38 @@ class MainView():
     def load_reuse(self):
         self.app_mode = "regenerate"
         self.frame.destroy()
-        self.root.geometry("400x600")
+        self.root.geometry("200x300")
 
-        self.frame = tk.Frame(self.root, background=grey1)
+        self.frame = tk.Frame(self.root)
         self.frame.pack(padx = 5, pady = 5, fill = 'both', expand = True)
 
-        select_button = tk.Button(self.frame, text="Select File", command=open_file_dialog(self))
-        select_button.pack(pady=10)
+        title_label = tk.Label(self.frame ,text="Regenerate Files", font=('Segoe 12 underline'))
+        title_label.pack(pady=(5,60), padx=5)
 
-        submit_button = tk.Button(self.frame, text="Submit")
-        submit_button.pack(pady=10)
+        path_container = tk.Frame(self.frame)
+        path_container.pack(fill="x")
+
+        file_path_label = tk.Label(path_container ,text="Generator File Path:", font=('Segoe 10'))
+        file_path_label.pack(padx=0, side="top",anchor="w")
+
+
+        # Entry widget for the file path
+        file_path_entry = tk.Entry(path_container)
+        file_path_entry.pack(side="left", pady=5, padx=5,fill="x", expand=True)
+
+        # Button widget to trigger the file regeneration
+        path_button = tk.Button(path_container, text="...", command=lambda: open_file_dialog(file_path_entry))
+        path_button.pack(side="right")
+
+        regenerate_button = tk.Button(self.frame, text="Generate Files", command=None)
+        regenerate_button.pack(side="bottom", anchor="s", padx=5, pady=5)
+
+        
+
 #endregion
 #region Use Existing Files
     def load_existing_file(self):
-        self.app_mode = "regenerate"
+        self.app_mode = "reuse"
         self.frame.destroy()
         self.root.geometry("400x600")
 
