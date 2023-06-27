@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import ttk
-import configparser
+
 
 
 grey1 = "#D4D4D4"
@@ -281,7 +281,7 @@ def submit_nodes(self, nodes_list):
             break
         
     if (len(nodes) == len(nodes_list.winfo_children())):
-        self.generator["Node"] = nodes
+        self.controller.generator["Node"] = nodes
         self.load_route_creator()
 
 #endregion
@@ -303,7 +303,7 @@ def create_route_container(self,route_list):
 
     existing_stops = tk.Listbox(route_container, selectmode=tk.MULTIPLE, height=5)
     existing_stops.grid(row=1, column=1, padx=5, pady=5, sticky='nwe')
-    for node in self.generator["Node"]:
+    for node in self.controller.generator["Node"]:
         if list(node.keys())[0] == "Stop":
             existing_stops.insert(tk.END, node["Stop"]["id"])
 
@@ -339,11 +339,11 @@ def submit_routes(self, route_list):
     for route in route_list.winfo_children():
         route_id = route.winfo_children()[1].get()
         stops_id_list = list(route.winfo_children()[6].get(0,"end"))
-        self.generator["Route"][route_id]= {"stops": {},
+        self.controller.generator["Route"][route_id]= {"stops": {},
                                                 "bus_rate": {},
                                                 "initial_occupancy":{}}
         for stop_id in stops_id_list:
-            self.generator["Route"][route_id]["stops"][stop_id]= {"passenger_rate":{}}
+            self.controller.generator["Route"][route_id]["stops"][stop_id]= {"passenger_rate":{}}
     self.load_stop_config()
 
 #endregion
@@ -386,7 +386,7 @@ def submit_stop_config(self, stop_list):
         route_id = data_container.winfo_children()[1]["text"]
         stop_id = data_container.winfo_children()[3]["text"]
         distribution = distribution_parser(distribution_container)
-        self.generator["Route"][route_id]["stops"][stop_id]["passenger_rate"] = distribution
+        self.controller.generator["Route"][route_id]["stops"][stop_id]["passenger_rate"] = distribution
     self.load_route_config()
 #endregion
 
@@ -421,7 +421,7 @@ def submit_route_config(self, route_list):
         distribution_container = main_container.winfo_children()[1]
         route_id = data_container.winfo_children()[1]["text"]
         distribution = distribution_parser(distribution_container)
-        self.generator["Route"][route_id]["bus_rate"] = distribution
+        self.controller.generator["Route"][route_id]["bus_rate"] = distribution
     self.load_passenger_action_config()
 #endregion
 
@@ -449,8 +449,8 @@ def create_passenger_action_config_container(passenger_list,title):
 def submit_passenger_action_config(self, passenger_list):
     boarding_container = passenger_list.winfo_children()[0].winfo_children()[1]
     alighting_container = passenger_list.winfo_children()[1].winfo_children()[1]
-    self.generator["Passenger"]["boarding_time_dist"] = distribution_parser(boarding_container)
-    self.generator["Passenger"]["alighting_time_dist"] = distribution_parser(alighting_container)
+    self.controller.generator["Passenger"]["boarding_time_dist"] = distribution_parser(boarding_container)
+    self.controller.generator["Passenger"]["alighting_time_dist"] = distribution_parser(alighting_container)
     self.load_passenger_occupancy_config()
 
 #endregion
@@ -485,19 +485,29 @@ def submit_passenger_occupancy_config(self, route_list):
         distribution_container = main_container.winfo_children()[1]
         route_id = data_container.winfo_children()[1]["text"]
         distribution = distribution_parser(distribution_container)
-        self.generator["Route"][route_id]["initial_occupancy"] = distribution
+        self.controller.generator["Route"][route_id]["initial_occupancy"] = distribution
     self.load_overview()
 #endregion
 
 def submit_generator_file(self):
-    self.complete = True
+    self.controller.complete = True
     self.root.destroy()
 
 def submit_regeneration_file(self,container):
-    self.complete = True
+    self.controller.complete = True
+    path = container.get()
+    self.controller.generator_path = path
+    self.controller.load_generator_from_path(path)
+    self.root.destroy()
 
-def open_file_dialog(field):
+def open_json_file_dialog(field):
     file_path = filedialog.askopenfilename(initialdir="files", title="Select File", filetypes=[("Json Files", "*.json")])
+    if file_path:
+        field.delete(0,tk.END)        
+        field.insert(0,file_path)
+
+def open_csv_file_dialog(field):
+    file_path = filedialog.askopenfilename(initialdir="files", title="Select File", filetypes=[("CSV", "*.csv")])
     if file_path:
         field.delete(0,tk.END)        
         field.insert(0,file_path)
@@ -505,30 +515,14 @@ def open_file_dialog(field):
 #=================================App Class=======================================#
 #region MainView
 class MainView():
-    def __init__(self):
+    def __init__(self,controller):
         self.root = tk.Tk()
         self.root.geometry("400x400")
         self.root.title("VexSim")
         self.root.resizable(False,False)
         self.frame = None
-        self.app_mode = None #["new","regenerate","reuse"]
-        self.complete = False
 
-
-        config = configparser.ConfigParser()
-        config.read(".config")
-        self.generator = {
-        "Time":{
-            "Duration": int(config.get('SimTime', 'sim_duration')),
-            "Tick": float(config.get('SimTime', 'sim_tick'))},
-        "Node":[],
-        "Route":{},
-        "Buses":{"top_speed": float(config.get('Buses', 'top_speed')), 
-                 "acc":float(config.get('Buses', 'acceleration')),
-                 "desc":float(config.get('Buses', 'deceleration'))},
-        "Passenger":{}}
-        self.passenger_dispatcher = None
-        self.bus_dispatcher = None
+        self.controller = controller
         self.load_main_view()
 
 #region Main View
@@ -552,7 +546,7 @@ class MainView():
 #endregion
 #region Create New
     def load_create_new(self):
-        self.app_mode = "new"
+        self.controller.app_mode = "new"
         self.frame.destroy()
         self.root.geometry(f"{window_width}x{window_height}")
 
@@ -660,7 +654,7 @@ class MainView():
         stop_list.columnconfigure(0, weight=1)
         stop_list.columnconfigure(1, weight=3)
 
-        for route_id, route_data in self.generator["Route"].items():
+        for route_id, route_data in self.controller.generator["Route"].items():
             stops = route_data["stops"]    
             for stop_id in stops:
                 create_stop_config_container(stop_list,route_id,stop_id)
@@ -681,7 +675,7 @@ class MainView():
         route_list = tk.Frame(main_panel)
         route_list.pack(side="top",fill='both', expand=True, padx=5, pady=5)
 
-        for route_id in self.generator["Route"].keys():
+        for route_id in self.controller.generator["Route"].keys():
             create_route_config_container(route_list,route_id)
 
         submit_route_config_button = tk.Button(main_panel, text="Submit Bus Arrival Rate",command=lambda: submit_route_config(self, route_list))
@@ -719,7 +713,7 @@ class MainView():
         route_list = tk.Frame(main_panel)
         route_list.pack(side="top",fill='both', expand=True, padx=5, pady=5)
 
-        for route_id in self.generator["Route"].keys():
+        for route_id in self.controller.generator["Route"].keys():
             create_passenger_occupancy_config_container(route_list,route_id)
 
         submit_passenger_occupancy_config_button = tk.Button(main_panel, text="Submit Bus Arrival Rate",command=lambda: submit_passenger_occupancy_config(self, route_list))
@@ -734,9 +728,9 @@ class MainView():
 #region Reuse Generator File 
 
     def load_reuse(self):
-        self.app_mode = "regenerate"
+        self.controller.app_mode = "regenerate"
         self.frame.destroy()
-        self.root.geometry("200x300")
+        self.root.geometry("400x400")
 
         self.frame = tk.Frame(self.root)
         self.frame.pack(padx = 5, pady = 5, fill = 'both', expand = True)
@@ -750,16 +744,13 @@ class MainView():
         file_path_label = tk.Label(path_container ,text="Generator File Path:", font=('Segoe 10'))
         file_path_label.pack(padx=0, side="top",anchor="w")
 
-
-        # Entry widget for the file path
         file_path_entry = tk.Entry(path_container)
         file_path_entry.pack(side="left", pady=5, padx=5,fill="x", expand=True)
 
-        # Button widget to trigger the file regeneration
-        path_button = tk.Button(path_container, text="...", command=lambda: open_file_dialog(file_path_entry))
+        path_button = tk.Button(path_container, text="...", command=lambda: open_json_file_dialog(file_path_entry))
         path_button.pack(side="right")
 
-        regenerate_button = tk.Button(self.frame, text="Generate Files", command=None)
+        regenerate_button = tk.Button(self.frame, text="Generate Files", command=lambda:submit_regeneration_file(self, file_path_entry))
         regenerate_button.pack(side="bottom", anchor="s", padx=5, pady=5)
 
         
@@ -767,18 +758,54 @@ class MainView():
 #endregion
 #region Use Existing Files
     def load_existing_file(self):
-        self.app_mode = "reuse"
+        self.controller.app_mode = "reuse"
         self.frame.destroy()
-        self.root.geometry("400x600")
+        self.root.geometry("400x400")
 
-        self.frame = tk.Frame(self.root, background=grey1)
+        self.frame = tk.Frame(self.root)
         self.frame.pack(padx = 5, pady = 5, fill = 'both', expand = True)
 
-        select_button = tk.Button(self.frame, text="Select File", command=open_file_dialog(self))
-        select_button.pack(pady=10)
+        title_label = tk.Label(self.frame ,text="Re-Use Files", font=('Segoe 12 underline'))
+        title_label.pack(pady=(5,60), padx=5)
 
-        submit_button = tk.Button(self.frame, text="Submit")
-        submit_button.pack(pady=10)
-        
+        generator_path_container = tk.Frame(self.frame)
+        generator_path_container.pack(fill="x")
+
+        generator_path_label = tk.Label(generator_path_container ,text="Generator File Path:", font=('Segoe 10'))
+        generator_path_label.pack(padx=0, side="top",anchor="w")
+
+        generator_path_entry = tk.Entry(generator_path_container)
+        generator_path_entry.pack(side="left", pady=5, padx=5,fill="x", expand=True)
+
+        generator_path_button = tk.Button(generator_path_container, text="...", command=lambda: open_json_file_dialog(generator_path_entry))
+        generator_path_button.pack(side="right")
+
+        passenger_dispatcher_path_container = tk.Frame(self.frame)
+        passenger_dispatcher_path_container.pack(fill="x")
+
+        passenger_dispatcher_path_label = tk.Label(passenger_dispatcher_path_container ,text="Passenger Dispatcher File Path:", font=('Segoe 10'))
+        passenger_dispatcher_path_label.pack(padx=0, side="top",anchor="w")
+
+        passenger_dispatcher_path_entry = tk.Entry(passenger_dispatcher_path_container)
+        passenger_dispatcher_path_entry.pack(side="left", pady=5, padx=5,fill="x", expand=True)
+
+        passenger_dispatcher_path_button = tk.Button(passenger_dispatcher_path_container, text="...", command=lambda: open_csv_file_dialog(passenger_dispatcher_path_entry))
+        passenger_dispatcher_path_button.pack(side="right")
+
+        bus_dispatcher_path_container = tk.Frame(self.frame)
+        bus_dispatcher_path_container.pack(fill="x")
+
+        bus_dispatcher_path_label = tk.Label(bus_dispatcher_path_container ,text="Passenger Dispatcher File Path:", font=('Segoe 10'))
+        bus_dispatcher_path_label.pack(padx=0, side="top",anchor="w")
+
+        bus_dispatcher_path_entry = tk.Entry(bus_dispatcher_path_container)
+        bus_dispatcher_path_entry.pack(side="left", pady=5, padx=5,fill="x", expand=True)
+
+        bus_dispatcher_path_button = tk.Button(bus_dispatcher_path_container, text="...", command=lambda: open_csv_file_dialog(bus_dispatcher_path_entry))
+        bus_dispatcher_path_button.pack(side="right")
+
+        regenerate_button = tk.Button(self.frame, text="Generate Files", command=lambda:None)
+        regenerate_button.pack(side="bottom", anchor="s", padx=5, pady=5)
+
 #endregion
 #endregion
