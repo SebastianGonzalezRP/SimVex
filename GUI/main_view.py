@@ -496,9 +496,26 @@ def submit_generator_file(self):
 def submit_regeneration_file(self,container):
     self.controller.complete = True
     path = container.get()
-    self.controller.generator_path = path
-    self.controller.load_generator_from_path(path)
-    self.root.destroy()
+    if path != "":
+        self.controller.generator_path = path
+        self.controller.load_generator_from_path(path)
+        self.root.destroy()
+    else:
+        tk.messagebox.showinfo(" ","Missing Path")
+
+def submit_reuse_file(self,json_container,passenger_container,bus_container):
+    
+    self.controller.complete = True
+    json_path = json_container.get()
+    passenger_path = passenger_container.get()
+    bus_path = bus_container.get()
+    if json_path != "" and passenger_path != "" and bus_path != "":
+        self.controller.generator_path = json_path
+        self.controller.passenger_dispatcher_path = passenger_path
+        self.controller.bus_dispatcher_path = bus_path
+        self.root.destroy()
+    else:
+        tk.messagebox.showinfo(" ","Missing Paths")
 
 def open_json_file_dialog(field):
     file_path = filedialog.askopenfilename(initialdir="files", title="Select File", filetypes=[("Json Files", "*.json")])
@@ -804,7 +821,7 @@ class MainView():
         bus_dispatcher_path_button = tk.Button(bus_dispatcher_path_container, text="...", command=lambda: open_csv_file_dialog(bus_dispatcher_path_entry))
         bus_dispatcher_path_button.pack(side="right")
 
-        regenerate_button = tk.Button(self.frame, text="Generate Files", command=lambda:None)
+        regenerate_button = tk.Button(self.frame, text="Generate Files", command=lambda:submit_reuse_file(self,generator_path_entry,passenger_dispatcher_path_entry,bus_dispatcher_path_entry))
         regenerate_button.pack(side="bottom", anchor="s", padx=5, pady=5)
 
 #endregion

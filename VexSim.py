@@ -34,6 +34,13 @@ class VexSim():
         self.bus_dispatcher_path = f"files/{self.serial}/bus_dispatcher.csv"
         self.passenger_dispatcher_path = f"files/{self.serial}/passenger_dispatcher.csv"
 
+    def setup_sim_controller(self):
+        self.sim_controller.load_files_data(self.generator_path,
+                                            self.passenger_dispatcher_path,
+                                            self.bus_dispatcher_path)
+        self.sim_controller.initialize_sim()
+        self.sim_controller.run_sim()
+
 if __name__ == "__main__":
     VS = VexSim()
     VS.run()
@@ -42,18 +49,15 @@ if __name__ == "__main__":
         app_mode = VS.gui.controller.app_mode
         if app_mode == "new":
             VS.build_from_generator()
-            VS.sim_controller.load_files_data(VS.generator_path,
-                                              VS.passenger_dispatcher_path,
-                                              VS.bus_dispatcher_path)
-            VS.sim_controller.initialize_sim()
-            VS.sim_controller.run_sim()
+            VS.setup_sim_controller()
         elif app_mode == "regenerate":
             VS.build_from_generator()
-            VS.sim_controller.load_files_data(VS.generator_path,
-                                              VS.passenger_dispatcher_path,
-                                              VS.bus_dispatcher_path)
+            VS.setup_sim_controller()
+            print(VS.sim_controller.get_results())
+        elif app_mode == "reuse":
+            VS.sim_controller.load_files_data(VS.view_controller.generator_path,
+                                            VS.view_controller.passenger_dispatcher_path,
+                                            VS.view_controller.bus_dispatcher_path)
             VS.sim_controller.initialize_sim()
             VS.sim_controller.run_sim()
             print(VS.sim_controller.get_results())
-        elif app_mode == "reuse":
-            pass
