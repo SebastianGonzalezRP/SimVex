@@ -812,7 +812,7 @@ class MainView():
         bus_dispatcher_path_container = tk.Frame(self.frame)
         bus_dispatcher_path_container.pack(fill="x")
 
-        bus_dispatcher_path_label = tk.Label(bus_dispatcher_path_container ,text="Passenger Dispatcher File Path:", font=('Segoe 10'))
+        bus_dispatcher_path_label = tk.Label(bus_dispatcher_path_container ,text="Bus Dispatcher File Path:", font=('Segoe 10'))
         bus_dispatcher_path_label.pack(padx=0, side="top",anchor="w")
 
         bus_dispatcher_path_entry = tk.Entry(bus_dispatcher_path_container)

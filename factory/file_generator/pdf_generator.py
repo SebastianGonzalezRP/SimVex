@@ -6,19 +6,31 @@ from reportlab.graphics.shapes import Drawing
 from reportlab.graphics.charts.barcharts import VerticalBarChart
 from reportlab.lib.validators import Auto
 
+
 class PDFGenerator:
-    def __init__(self, sim_controller):
-        self.sim_controller = sim_controller
-        pass
+    def __init__(self,serial):
+        
+        self.doc = SimpleDocTemplate(f"files/{serial}/report.pdf", pagesize=letter)
 
-    def get_simulated_routes_number(self):
-        pass
+        self.elements = []
 
-    def get_simulated_stops_number(self):
-        pass
+        styles = getSampleStyleSheet()
+        title = Paragraph(f"<b>Report {serial}</b>", styles['Title'])
+        self.elements.append(title)
 
-    def get_simulated_distance(self):
-        pass
+    def append_table(self,data):
+        table = Table(data)
+        table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.white),
+                               ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+                               ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                               ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                               ('FONTSIZE', (0, 0), (-1, 0), 14),
+                               ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                               ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                               ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+        
+        self.elements.append(table) 
 
-    def get_bus_commercial_speed(self,bus):
-        pass
+
+    def build_document(self):
+        self.doc.build(self.elements)

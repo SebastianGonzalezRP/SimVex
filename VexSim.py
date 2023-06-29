@@ -4,6 +4,7 @@ from GUI.main_view import MainView
 from factory.file_generator.csv_generator import CSVGenerator
 from factory.file_generator.json_generator import JSONGenerator
 from factory.file_generator.utils import generate_serial
+from output.data_analyzer import DataAnalyzer
 
 class VexSim():
     def __init__(self):
@@ -28,7 +29,7 @@ class VexSim():
     def build_from_generator(self):
         self.define_serial()
         generator = self.gui.controller.generator
-        JSONGenerator(generator)
+        JSONGenerator(generator)    
         CSVGenerator(generator)
         self.generator_path = f"files/{self.serial}/generator.json"
         self.bus_dispatcher_path = f"files/{self.serial}/bus_dispatcher.csv"
@@ -53,11 +54,12 @@ if __name__ == "__main__":
         elif app_mode == "regenerate":
             VS.build_from_generator()
             VS.setup_sim_controller()
-            print(VS.sim_controller.get_results())
-        elif app_mode == "reuse":
+        elif app_mode == "reuse": 
             VS.sim_controller.load_files_data(VS.view_controller.generator_path,
                                             VS.view_controller.passenger_dispatcher_path,
                                             VS.view_controller.bus_dispatcher_path)
+            VS.serial = VS.view_controller.generator_path.split('/')[-2]
             VS.sim_controller.initialize_sim()
             VS.sim_controller.run_sim()
-            print(VS.sim_controller.get_results())
+
+    DataAnalyzer(VS.sim_controller, VS.serial)
