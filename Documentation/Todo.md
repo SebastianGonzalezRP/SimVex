@@ -15,16 +15,15 @@
 ---
 - [ ] GUI
   - [ ] Input Module
-      - [ ] Create New
+      - [x] Create New
         - [x] Node Definition And Creation
         - [x] Route Definition And Creation
-        - [ ] Stops Configuration
-        - [ ] Route Configuration
-        - [ ] Passenger Configuration
-      - [ ] Re-Use Generator File
+        - [x] Stops Configuration
+        - [x] Route Configuration
+        - [x] Passenger Configuration
+      - [x] Re-Use Generator File
       - [ ] Load Existing Files
-  - [ ] GUI Controller
-  - [ ] Output Module
+  - [x] GUI Controller
 
 ---
 - [x] Controllers
@@ -49,8 +48,8 @@
     - [ ] Distribucion Velocidad Comercial Por Ruta
     - [ ] Distribucion Velocidad Comercial 
 ---
-- [ ] File System
-  - [ ] File Generation
-    - [ ] Generator File (.json)
+- [x] File System
+  - [x] File Generation
+    - [x] Generator File (.json)
     - [x] Passenger Dispatcher (.csv)
     - [x] Bus Dispatcher (.csv)
