@@ -13,8 +13,8 @@
   - [x] Route
   - [x] Transit Network
 ---
-- [ ] GUI
-  - [ ] Input Module
+- [x] GUI
+  - [x] Input Module
       - [x] Create New
         - [x] Node Definition And Creation
         - [x] Route Definition And Creation
@@ -22,7 +22,7 @@
         - [x] Route Configuration
         - [x] Passenger Configuration
       - [x] Re-Use Generator File
-      - [ ] Load Existing Files
+      - [x] Load Existing Files
   - [x] GUI Controller
 
 ---
@@ -34,17 +34,17 @@
 ---
 - [ ] Statistical Module
   - [ ] Datos Generales de Simulacion
-    - [ ] Nº Rutas Simuladas
-    - [ ] N Paraderos Simulados
-    - [ ] Distancia Simulada
-    - [ ] Tiempo Simulado
-    - [ ] Demanda de Embarque
+    - [x] Nº Rutas Simuladas
+    - [x] N Paraderos Simulados
+    - [x] Distancia Simulada
+    - [x] Tiempo Simulado
+    - [x] Demanda de Embarque
     - [ ] Demanda de Bajada
   - [ ] Resultados de Simulacion
     - [ ] Espera Promedio Pasajero
     - [ ] Pasajero Promedio en Anden
     - [ ] Demora Promedio Por Transferencia Por Bus
-    - [ ] Velocidad Comercial Por Bus
+    - [x] Velocidad Comercial Por Bus
     - [ ] Distribucion Velocidad Comercial Por Ruta
     - [ ] Distribucion Velocidad Comercial 
 ---
@@ -53,3 +53,4 @@
     - [x] Generator File (.json)
     - [x] Passenger Dispatcher (.csv)
     - [x] Bus Dispatcher (.csv)
+    - [x] Results Report (.pdf)

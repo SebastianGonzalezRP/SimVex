@@ -135,6 +135,8 @@ def distribution_parser(container):
     elif distribution == "Fixed":
         rate = int(container.winfo_children()[3].get())
         return {distribution:{"rate":rate}}
+    else:
+        return None
 
 #region Node Creator
 def create_street_node(self,node_list):
@@ -335,16 +337,24 @@ def switch_stop(origin,target):
         target.insert(tk.END, stop)
 
 def submit_routes(self, route_list):
-    route = []
+    route_parsed_count = 0
     for route in route_list.winfo_children():
         route_id = route.winfo_children()[1].get()
         stops_id_list = list(route.winfo_children()[6].get(0,"end"))
-        self.controller.generator["Route"][route_id]= {"stops": {},
-                                                "bus_rate": {},
-                                                "initial_occupancy":{}}
-        for stop_id in stops_id_list:
-            self.controller.generator["Route"][route_id]["stops"][stop_id]= {"passenger_rate":{}}
-    self.load_stop_config()
+        print(len(stops_id_list))
+        if route_id != "" and len(stops_id_list) > 0:
+            self.controller.generator["Route"][route_id]= {"stops": {},
+                                                    "bus_rate": {},
+                                                    "initial_occupancy":{}}
+            for stop_id in stops_id_list:
+                self.controller.generator["Route"][route_id]["stops"][stop_id]= {"passenger_rate":{}}
+            route_parsed_count += 1
+        else:
+            route_parsed_count = 0
+            tk.messagebox.showinfo(" ",f"Route Attributes Can Not Be Empty")
+            break
+    if route_parsed_count > 0:
+        self.load_stop_config()
 
 #endregion
 
@@ -485,7 +495,8 @@ def submit_passenger_occupancy_config(self, route_list):
         distribution_container = main_container.winfo_children()[1]
         route_id = data_container.winfo_children()[1]["text"]
         distribution = distribution_parser(distribution_container)
-        self.controller.generator["Route"][route_id]["initial_occupancy"] = distribution
+        if distribution != None and route_id != "":
+            self.controller.generator["Route"][route_id]["initial_occupancy"] = distribution
     self.load_overview()
 #endregion
 
