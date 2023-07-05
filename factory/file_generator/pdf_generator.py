@@ -41,21 +41,13 @@ class PDFGenerator:
         self.elements.append(table) 
         self.add_spacer()
 
-    def append_graph(self, plot,graph_name):
-        path = f"files/{self.serial}/tmp/"
-        image_path = f"{path}{graph_name}.png"
-        print(image_path)
-        if not os.path.exists(path):
-            os.makedirs(path)
-        plot.show()
-        plot.savefig(image_path)
+    def append_graph(self,subtitle):
+        self.append_subtitle(subtitle)
+        image_path = "files/tmp/graph.png"
         image = Image(image_path, width=400, height=300)
         self.elements.append(image)
         self.add_spacer()
-        # try:
-        #     os.rmdir(path)
-        # except OSError as x:
-        #     print(f"Error occured: {path} : {x.strerror}")
+        
 
     def add_spacer(self):
         spacer = Spacer(1,20)

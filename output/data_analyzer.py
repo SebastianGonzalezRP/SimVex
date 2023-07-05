@@ -2,7 +2,13 @@ from factory.file_generator.pdf_generator import PDFGenerator
 from models.nodes.street import Street
 from models.nodes.stop import Stop
 from models.nodes.intersection import Intersection
+from scipy import stats
+import seaborn as sns
+import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
+import statistics
+
 
 
 class DataAnalyzer:
@@ -94,10 +100,18 @@ class DataAnalyzer:
     def build_simulated_distributions_table(self):
         pass
 
-    def build_graph_test(self):
-        plt.plot([1, 2, 3, 4, 5], [1, 4, 9, 16, 25])
-        plt.plot([1, 2, 3, 4, 5], [1, 4, 9, 16, 25])
-        self.PDFG.append_graph(plt,"test")
+
+    def build_speed_by_route_graph(self):
+        graph_file_path = "files/tmp/graph.png" 
+        data = self.get_bus_commercial_speed()
+        df = pd.DataFrame(data, columns=['ID', 'Route', 'AvgSpeed'])
+        summary = df.groupby('Route')['AvgSpeed'].agg(['mean', 'std']).reset_index()
+        summary = summary.sort_values(by=['mean'])
+        sns.barplot(x='Route', y='mean', data=summary, yerr=summary["std"])
+        plt.xlabel('Route ID')
+        plt.ylabel('Average Speed (m/s)')
+        plt.savefig(graph_file_path)
+        self.PDFG.append_graph("Average Speed by Route")
 
 
     def generate_data(self):
@@ -113,6 +127,6 @@ class DataAnalyzer:
         self.build_simulated_data_table()
         self.build_comercial_speed_table()
         self.build_commercial_speed_by_route()
-        self.build_graph_test()
+        self.build_speed_by_route_graph()
 
         self.PDFG.build_document()
