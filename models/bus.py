@@ -8,18 +8,20 @@ from typing import List
 
 
 class Bus:
-    def __init__(self, 
-                id: str,
-                route: Route, 
-                passengers: List[Passenger],
-                door_n: int, 
-                top_speed: float, 
-                acc: float, 
-                desc: float):
+    def __init__(self,
+                 arrival_time:int, 
+                 id: str,
+                 route: Route, 
+                 door_n: int, 
+                 top_speed: float, 
+                 acc: float, 
+                 desc: float):
     
+        self.arrival_time = arrival_time
+
         self.id = id
         self.route = route
-        self.passengers = passengers
+        
         self.door_n = door_n
         self.top_speed =top_speed
         self.acc = acc #acc > 0 in m/s2
@@ -33,6 +35,9 @@ class Bus:
         self.speed = None # speed > 0 in m/s
         self.location = None #Node
         self.position = None  #Relative to Node/Location First Position is Node Start
+        self.traveled_distance = 0
+
+        self.passengers = []
 
         self.breaking_point = None
 
@@ -90,6 +95,7 @@ class Bus:
 
     def update_position(self, tick):
         self.position += self.speed * tick
+        self.traveled_distance += self.speed * tick
 
     def update_stop_flag(self):
         if type(self.next_node) == Stop:

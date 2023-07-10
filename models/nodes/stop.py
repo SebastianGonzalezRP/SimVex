@@ -11,6 +11,9 @@ class Stop(Node):
         self.bus_operational_queue =[None for i in range(n_platform)]
         self.bus_waiting_queue = []
 
+        self.passengers_count_in_platform_log = []
+        self.served_buses_count = 0
+
 
     #Passengers entering the simulation at the this Stop
     def arriving_passenger(self,passenger):
@@ -53,6 +56,7 @@ class Stop(Node):
         try:
             index = self.bus_operational_queue.index(bus)
             self.bus_operational_queue[index] = None
+            self.served_buses_count += 1
         except ValueError:
             print("Bus Is Not In The Stop Operational Queue")
 
@@ -88,12 +92,21 @@ class Stop(Node):
         self.serving_routes.append(route)
         self.passengers_boarding_queue[route.id]= []
 
-    def print_node(self):
-        print("========STOP=========")
-        print(f"Stop ID: {self.id}")
-        print(f"Serving Routes: {self.serving_routes}")
-        print(f"Berth Numbers: {self.n_platform}")
-        print("======================")
+    def log_waiting_passengers_count(self):
+        passenger_count = 0
+        for route in self.passengers_boarding_queue:
+            passenger_count += len(self.passengers_boarding_queue[route])
+        self.passengers_count_in_platform_log.append(passenger_count)
+
+    def log_count_buses_in_queue(self):
+
+        pass
+
+
+
+    def update_stop_log(self):
+        self.log_waiting_passengers_count()
+        self.log_count_buses_in_queue()
 
 
         

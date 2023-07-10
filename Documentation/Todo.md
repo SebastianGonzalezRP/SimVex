@@ -33,20 +33,37 @@
   - [x] Simulation Controller
 ---
 - [ ] Statistical Module
-  - [ ] Datos Generales de Simulacion
-    - [x] Nº Rutas Simuladas
-    - [x] N Paraderos Simulados
-    - [x] Distancia Simulada
-    - [x] Tiempo Simulado
-    - [x] Demanda de Embarque
-    - [ ] Demanda de Bajada
-  - [ ] Resultados de Simulacion
-    - [ ] Espera Promedio Pasajero
-    - [ ] Pasajero Promedio en Anden
-    - [ ] Demora Promedio Por Transferencia Por Bus
-    - [x] Velocidad Comercial Por Bus
-    - [ ] Distribucion Velocidad Comercial Por Ruta
-    - [ ] Distribucion Velocidad Comercial 
+  - [ ] Inputs
+    - [x] Simulated Time
+    - [x] Nº Traffic Signals
+    - [x] Nº Bus Stops (IDs)
+    - [x] Nº Simulated Routes (IDs)
+    - [x] Distance [m]
+    - [x] Bus Flow [Bus/h] **??
+    - [x] Nº Boarding Passengers
+    - [x] Nº Alighting Passengers
+    - [x] Traffic Signals
+      - [x] Cycle Time [s]
+      - [x] Green Ratio 
+  - [ ] Outputs
+    - [ ] Passengers Data ea Stop
+      - [ ] Average Waiting Time (Mean, Max, Std) [s]
+      - [ ] Nº Passengers in Platform (Mean, Max, Std) [Passenger]
+    - [ ] Buses ea
+      - [ ] Travel Time [s]
+      - [ ] Dwell Time [s]
+      - [ ] Queue Delay [s]
+      - [ ] Total Delay (Dwell + Queue) [s]
+      - [ ] Total Time in  Sim (Travel + Delay) [s]
+      - [ ] All Busses (Mean, Max, Std)
+    - [ ] Bus Stop ea
+      - [ ] Capacity [Bus/h]
+      - [ ] Queue Length (Mean, Max, Std) [Bus]
+    - [ ] Arterial Road
+      - [ ] Total Travel Time
+      - [ ] Commercial Speed [m/s]
+      - [ ] Signal Delay [s]
+      - [ ] Bus Stop Delay [s]
 ---
 - [x] File System
   - [x] File Generation

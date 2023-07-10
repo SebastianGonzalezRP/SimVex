@@ -22,10 +22,11 @@ class PDFGenerator:
         self.elements.append(title)
         self.add_spacer()
 
-    def append_subtitle(self,subtitle):
-        subtitle_style = ParagraphStyle(name='SubtitleStyle',fontName = "Helvetica", fontSize=16, leading=18,spaceAfter=10)
-        subtitle_paragraph = Paragraph(subtitle, style=subtitle_style)
-        self.elements.append(subtitle_paragraph)
+    def append_subtitle(self,subtitle = None):
+        if subtitle != None:
+            subtitle_style = ParagraphStyle(name='SubtitleStyle',fontName = "Helvetica", fontSize=16, leading=18,spaceAfter=10)
+            subtitle_paragraph = Paragraph(subtitle, style=subtitle_style)
+            self.elements.append(subtitle_paragraph)
 
     def append_table(self,data,subtitle):
         table = Table(data)

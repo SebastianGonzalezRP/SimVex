@@ -3,8 +3,6 @@ from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import ttk
 
-
-
 grey1 = "#D4D4D4"
 grey2 = "#B4B4B4"
 grey3 = "#909090"
@@ -184,7 +182,7 @@ def load_street_node(self,node_container):
     length_field = tk.Entry(node_container)
     length_field.grid(row=1, column=1, padx=5, pady=5, sticky='nsew')
 
-    ntracks_label = tk.Label(node_container, text="Number of Tracks", bg=grey3)
+    ntracks_label = tk.Label(node_container, text="Number of Lanes", bg=grey3)
     ntracks_label.grid(row=0, column=2, padx=5, pady=5, sticky='nsew')
 
     number_spinbox = ttk.Spinbox(node_container, from_=2, to=2)
@@ -236,7 +234,7 @@ def load_intersection_node(self,node_container):
     cicle_spinbox = ttk.Spinbox(node_container, from_=1, to=120)
     cicle_spinbox.grid(row=1, column=1, padx=5, pady=5, sticky='nsew')
 
-    effective_green_label = tk.Label(node_container, text="Effective Green (%)", bg=grey3)
+    effective_green_label = tk.Label(node_container, text="Green Ratio", bg=grey3)
     effective_green_label.grid(row=0, column=2, padx=5, pady=5, sticky='nsew')
 
     effective_green = ttk.Spinbox(node_container, from_=0, to=1, increment=0.01)
@@ -423,7 +421,6 @@ def create_route_config_container(route_list,_route_id):
     distribution_container.grid(row=0, column=1, padx=5, pady=5, sticky='we') 
 
     load_exponencial_template(distribution_container)
-
 
 def submit_route_config(self, route_list):
     for main_container in route_list.winfo_children():
