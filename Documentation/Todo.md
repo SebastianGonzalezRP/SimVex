@@ -46,19 +46,19 @@
       - [x] Cycle Time [s]
       - [x] Green Ratio 
   - [ ] Outputs
-    - [ ] Passengers Data ea Stop
-      - [ ] Average Waiting Time (Mean, Max, Std) [s]
-      - [ ] Nº Passengers in Platform (Mean, Max, Std) [Passenger]
-    - [ ] Buses ea
-      - [ ] Travel Time [s]
-      - [ ] Dwell Time [s]
-      - [ ] Queue Delay [s]
-      - [ ] Total Delay (Dwell + Queue) [s]
-      - [ ] Total Time in  Sim (Travel + Delay) [s]
-      - [ ] All Busses (Mean, Max, Std)
-    - [ ] Bus Stop ea
-      - [ ] Capacity [Bus/h]
-      - [ ] Queue Length (Mean, Max, Std) [Bus]
+    - [x] Passengers Data ea Stop
+      - [x] Average Waiting Time (Mean, Max, Std) [s]
+      - [x] Nº Passengers in Stop (Mean, Max, Std) [Passenger]
+    - [x] Buses ea
+      - [x] Travel Time [s]
+      - [x] Dwell Time [s]
+      - [x] Queue Delay [s]
+      - [x] Total Delay (Dwell + Queue) [s]
+      - [x] Total Time in  Sim (Travel + Delay) [s]
+      - [x] All Busses (Mean, Max, Std)
+    - [x] Bus Stop ea
+      - [x] Capacity [Bus/h]
+      - [x] Queue Length (Mean, Max, Std) [Bus]
     - [ ] Arterial Road
       - [ ] Total Travel Time
       - [ ] Commercial Speed [m/s]

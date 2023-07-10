@@ -12,6 +12,7 @@ class Stop(Node):
         self.bus_waiting_queue = []
 
         self.passengers_count_in_platform_log = []
+        self.bus_count_at_queue_log=[]
         self.served_buses_count = 0
 
 
@@ -61,7 +62,7 @@ class Stop(Node):
             print("Bus Is Not In The Stop Operational Queue")
 
     def reorganize_queues(self):
-        if sum(1 for spot in self.bus_waiting_queue if spot is not None) > 0:
+        if sum(1 for spot in self.bus_waiting_queue if spot is not None) > 0 and self.bus_operational_queue[-1] == None:
             spaces_operational_queue = self.bus_operational_queue.count(None)
             if spaces_operational_queue > 0:
                 split_index = self.first_available_operational_queue_spot()
@@ -69,8 +70,8 @@ class Stop(Node):
                 slice1 = self.bus_operational_queue[:split_index]
                 slice2 = self.bus_operational_queue[split_index:]
 
-                slice3 = self.bus_waiting_queue[len(slice2):]
-                slice4 = self.bus_waiting_queue[:len(slice2)]
+                slice3 = self.bus_waiting_queue[:len(slice2)]
+                slice4 = self.bus_waiting_queue[len(slice2):]
 
                 self.bus_operational_queue = slice1 + slice3
                 self.bus_waiting_queue = slice4 + slice2
@@ -99,9 +100,11 @@ class Stop(Node):
         self.passengers_count_in_platform_log.append(passenger_count)
 
     def log_count_buses_in_queue(self):
-
-        pass
-
+        count = 0
+        for queue_spot in self.bus_waiting_queue:
+            if queue_spot != None:
+                count +=1
+        self.bus_count_at_queue_log.append(count)
 
 
     def update_stop_log(self):

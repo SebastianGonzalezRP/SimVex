@@ -43,6 +43,10 @@ class Bus:
 
         self.speed_log = []
         self.time_log = 0
+        self.travel_time_log = 0
+        self.stop_queue_time_log = 0
+        self.stop_dwell_time_log = 0
+        self.intersection_queue_time_log = 0
 
     
     def board_passenger(self, passenger):
@@ -204,6 +208,15 @@ class Bus:
 
     def update_log_time(self, tick):
         self.time_log += tick
+        if  type(self.location) == Street:
+            self.travel_time_log += tick
+        elif type(self.location) == Stop:
+            if self in self.location.bus_waiting_queue:
+                self.stop_queue_time_log += tick
+            elif self in self.location.bus_operational_queue:
+                self.stop_dwell_time_log += tick
+        elif type(self.location) == Intersection:
+                self.intersection_queue_time_log += tick
 
     def update_log(self,tick):
         self.update_log_speed()
@@ -265,6 +278,19 @@ class Bus:
         print(f"Current Speed: {self.speed}")
         print(f"Next Destination: {self.next_node}")
         print(f"==================================")
+
+    def print_times_log(self):
+        print(f"==================================")
+        print(f"Bus ID: {self.id}")
+        print(f"Bus Route: {self.route.id}")
+        if type(self.location) == Stop:
+            print(f"Bus Location: {self.location.id}")
+        print(f"Total Time: {self.time_log}")
+        print(f"Travel Time: {self.travel_time_log}")
+        print(f"Stop Queue Time: {self.stop_queue_time_log}")
+        print(f"Stop Dwell Time: {self.stop_dwell_time_log}")
+        print(f"Intersection Queue Time : {self.intersection_queue_time_log}")
+        print(f"==================================\n")
 
 #endregion
         

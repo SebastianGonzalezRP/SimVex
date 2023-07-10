@@ -18,15 +18,18 @@ class DataAnalyzer:
 
 
         #metadata
-
-        self.simulation_length = 0
+        self.simulation_distance = 0
+        self.simulation_length = self.sim_c.generator['Time']['Duration']
+        self.buses_data = []
         self.generate_document()
     
     def get_simulated_distance(self):
         distance = 0
         for node in self.sim_c.streets:
             distance += node.length
-        self.simulation_length = distance
+        self.simulation_distance = distance
+
+    
 
     def get_bus_commercial_speed(self):
         data = []
@@ -34,23 +37,19 @@ class DataAnalyzer:
             buf_list = []
             buf_list.append(bus.id)
             buf_list.append(bus.route.id)
-            buf_list.append(round(self.simulation_length/bus.time_log,2))
+            buf_list.append(round(self.simulation_distance/bus.time_log,2))
             data.append(buf_list)
         data =  sorted(data, key=lambda x: x[2], reverse=True)
         return data
     
-        
-    def build_commercial_speed_by_route(self):
-        pass
-
 
     def build_simulated_data_table(self):
         data = []
-        data.append(["Simulated Time: ",f"{self.sim_c.generator['Time']['Duration']} seconds"])
+        data.append(["Simulated Time: ",f"{self.simulation_length} seconds"])
         data.append(["Nº Stops Simulated: ",f"{len(self.sim_c.stops_ids)}",f"{self.sim_c.stops_ids}"])
         data.append(["Nº Intersections Simulated: ",f"{len(self.sim_c.intersections)}"])
         data.append(["Nº Routes Simulated: ",f"{len(self.sim_c.routes_ids)}",f"{self.sim_c.routes_ids}"])
-        data.append(["Simulated Distance: ",f"{self.simulation_length} Meters"])
+        data.append(["Simulated Distance: ",f"{self.simulation_distance} Meters"])
         data.append(["Bus Flow: ",f"{len(self.sim_c.buses)/3600*self.sim_c.duration} [Bus/h]" ])
         data.append(["Total Passengers Simulated",f"{len(self.sim_c.passengers)}"])
         data.append(["Boarding Demand",f"{len(self.sim_c.boarding_passengers)}"])
@@ -69,17 +68,60 @@ class DataAnalyzer:
         if count > 0:
             self.PDFG.append_table(data,None)
 
+    def get_buses_stats(self):
+        #[["Bus Id","Route","Comercial Speed(m/s)","Travel Time(s)","Stop Q Time(s)","Dwell Time(s)","Intersection Time(s)","Total Delay(s)"]]
+        data = []
+        for bus in self.sim_c.buses:
+            buff = []
+            buff.append(bus.id)
+            buff.append(bus.route.id)
+            buff.append(round(self.simulation_distance/bus.time_log,2))
+            buff.append(bus.travel_time_log)
+            buff.append(bus.stop_queue_time_log)
+            buff.append(bus.stop_dwell_time_log)
+            buff.append(bus.intersection_queue_time_log)
+            buff.append(bus.stop_dwell_time_log + bus.stop_queue_time_log + bus.intersection_queue_time_log)
+            data.append(buff)
+        data =  sorted(data, key=lambda x: x[2], reverse=True)
+        self.buses_data= data
 
+    def build_bus_data_table(self):
+        data = [["Bus Id","Route","Comercial Speed[m/s]","Travel Time[s]","Stop Q Time[s]","Dwell Time[s]","Intersection Time[s]","Total Delay[s]"]]
+        data += self.buses_data
+        self.PDFG.append_table(data,"Bus Data Sheet")
 
-    def build_comercial_speed_table(self):
-        data = [["Bus Id","Route","Comercial Speed(m/s)"]]
-        data += self.get_bus_commercial_speed()
-
-        self.PDFG.append_table(data,"Bus Commercial Speed")
-
-    def build_simulated_distributions_table(self):
+    def get_stop_stats(self):
         pass
 
+    def build_stop_data_table(self):
+        data = [["Stop ID","Capacity[Bus/h]","Queue Length"]]
+        for stop in self.sim_c.stops:
+            buff = []
+            buff.append(stop.id)
+            buff.append(stop.served_buses_count*self.simulation_length/3600)
+            buff.append(f"Max: {max(stop.bus_count_at_queue_log)}")
+            buff.append(f"Mean: {round(np.mean(stop.bus_count_at_queue_log),2)}")
+            buff.append(f"Std: {round(np.std(stop.bus_count_at_queue_log),2)}")
+            data.append(buff)
+        self.PDFG.append_table(data,"Stop Data")
+
+    def build_passenger_data_table(self):
+        data = [["Stop ID","Passenger Waiting Time[s]","","","Passengers At Stop","",""]]
+        for stop in self.sim_c.stops:
+            passenger_waiting_time = []
+            buff = []
+            buff.append(stop.id)
+            for passenger in self.sim_c.boarding_passengers:
+                if passenger.origin == stop.id:
+                    passenger_waiting_time.append(passenger.waiting_time_log)
+            buff.append(f"Max: {max(passenger_waiting_time)}")
+            buff.append(f"Mean: {round(np.mean(passenger_waiting_time),2)}")
+            buff.append(f"Std: {round(np.std(passenger_waiting_time),2)}")
+            buff.append(f"Max: {max(stop.passengers_count_in_platform_log)}")
+            buff.append(f"Mean: {round(np.mean(stop.passengers_count_in_platform_log),2)}")
+            buff.append(f"Std: {round(np.std(stop.passengers_count_in_platform_log),2)}")
+            data.append(buff)
+        self.PDFG.append_table(data,None)
 
     def build_speed_by_route_graph(self):
         graph_file_path = "files/tmp/graph.png" 
@@ -96,17 +138,20 @@ class DataAnalyzer:
 
     def generate_data(self):
         self.get_simulated_distance()
+        self.get_buses_stats()
 
     def generate_document(self):
         self.generate_data()
         self.build_simulated_data_table()
         self.build_intersection_data_table()
-        self.build_comercial_speed_table()
-        self.build_commercial_speed_by_route()
-        self.build_speed_by_route_graph()
+        self.build_bus_data_table()
+        self.build_stop_data_table()
+        self.build_passenger_data_table()
+        #self.build_speed_by_route_graph()
+        #self.debug()
 
         self.PDFG.build_document()
 
     def debug(self):
-        print(f"Self Sim c boarding_passengers len {len(self.sim_c.boarding_passengers)}")
-        print(f"Self Sim c boarding_passengers len {len(self.sim_c.alighting_passengers)}")
+        for bus in self.sim_c.buses:
+            bus.print_times_log()

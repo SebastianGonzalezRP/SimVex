@@ -18,7 +18,7 @@ class PDFGenerator:
         self.elements = []
 
         styles = getSampleStyleSheet()
-        title = Paragraph(f"<b>VexSim Report {serial}</b>", styles['Title'])
+        title = Paragraph(f"<b>SimVex Report {serial}</b>", styles['Title'])
         self.elements.append(title)
         self.add_spacer()
 
@@ -35,7 +35,7 @@ class PDFGenerator:
                                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                                ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
                                ('FONTNAME', (1, 0), (-1, -1), 'Helvetica'),
-                               ('FONTSIZE', (0, 0), (-1, -1), 12),
+                               ('FONTSIZE', (0, 0), (-1, -1), 10),
                                ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
                                ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
         self.append_subtitle(subtitle)
