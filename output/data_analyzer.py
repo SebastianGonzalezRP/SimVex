@@ -123,6 +123,29 @@ class DataAnalyzer:
             data.append(buff)
         self.PDFG.append_table(data,None)
 
+
+    def build_general_simulation_data_table(self):
+        data = [["Total Travel Time[s]","Comercial Speed[m/s]","Signal Delay[s]","Bus Stop Delay[s]"]]
+        buff = []
+        total_trave_time = 0
+        comercial_speed = 0
+        signal_delay = 0
+        bus_stop_delay = 0
+        for bus in self.sim_c.completed_buses:
+            total_trave_time += bus.time_log
+            comercial_speed += self.simulation_distance/bus.time_log
+            signal_delay += bus.intersection_queue_time_log
+            bus_stop_delay += bus.stop_queue_time_log + bus.stop_dwell_time_log
+        buff.append(total_trave_time)
+        buff.append(round(comercial_speed/len(self.sim_c.completed_buses),2))
+        buff.append(signal_delay)
+        buff.append(bus_stop_delay)
+        data.append(buff)
+
+        self.PDFG.append_table(data,"Arterial Road Data")
+
+
+
     def build_speed_by_route_graph(self):
         graph_file_path = "files/tmp/graph.png" 
         data = self.get_bus_commercial_speed()
@@ -147,6 +170,7 @@ class DataAnalyzer:
         self.build_bus_data_table()
         self.build_stop_data_table()
         self.build_passenger_data_table()
+        self.build_general_simulation_data_table()
         #self.build_speed_by_route_graph()
         #self.debug()
 

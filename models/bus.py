@@ -27,19 +27,20 @@ class Bus:
         self.acc = acc #acc > 0 in m/s2
         self.desc = desc #dec > 0 in m/s2
 
-        self.next_node = None
-        self.stop_flag = False
-        self.check_stop_flag = True
-        self.alighting_queues = []
-        self.status = None #[Stationary, Accelerating, Decelerating, Cruising]
-        self.speed = None # speed > 0 in m/s
         self.location = None #Node
         self.position = None  #Relative to Node/Location First Position is Node Start
-        self.traveled_distance = 0
+        self.next_node = None
+
+        self.stop_flag = False
+        self.check_stop_flag = True
+        self.breaking_point = None
 
         self.passengers = []
+        self.alighting_queues = []
 
-        self.breaking_point = None
+        self.status = None #[Stationary, Accelerating, Decelerating, Cruising]
+        self.speed = None # speed > 0 in m/s
+        self.traveled_distance = 0
 
         self.speed_log = []
         self.time_log = 0

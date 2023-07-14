@@ -543,7 +543,7 @@ class MainView():
     def __init__(self,controller):
         self.root = tk.Tk()
         self.root.geometry("400x400")
-        self.root.title("VexSim")
+        self.root.title("SimVex")
         self.root.resizable(False,False)
         self.frame = None
 
@@ -741,7 +741,7 @@ class MainView():
         for route_id in self.controller.generator["Route"].keys():
             create_passenger_occupancy_config_container(route_list,route_id)
 
-        submit_passenger_occupancy_config_button = tk.Button(main_panel, text="Submit Bus Arrival Rate",command=lambda: submit_passenger_occupancy_config(self, route_list))
+        submit_passenger_occupancy_config_button = tk.Button(main_panel, text="Submit Passenger Occupancy Rate",command=lambda: submit_passenger_occupancy_config(self, route_list))
         submit_passenger_occupancy_config_button.pack(side="bottom", fill="x", pady=5, padx=5)
      
     def load_overview(self):

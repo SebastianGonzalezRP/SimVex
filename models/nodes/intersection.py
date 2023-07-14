@@ -7,7 +7,7 @@ class Intersection(Node):
     def __init__(self, cicle_duration: int, effective_green: float):
         self.semaphore = 'G' #["G","Y","R"]
         self.cicle_duration = cicle_duration #Seconds
-        self.effective_green = effective_green #Percentage (0,1) ej: 0.75
+        self.effective_green = effective_green #Ratio (0,1) ej: 0.75
 
         self.g_timer = None
         self.y_timer = YELLOW_TIMER_CONSTANT

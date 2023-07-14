@@ -33,7 +33,7 @@
   - [x] Simulation Controller
 ---
 - [ ] Statistical Module
-  - [ ] Inputs
+  - [x] Inputs
     - [x] Simulated Time
     - [x] Nº Traffic Signals
     - [x] Nº Bus Stops (IDs)
@@ -50,12 +50,13 @@
       - [x] Average Waiting Time (Mean, Max, Std) [s]
       - [x] Nº Passengers in Stop (Mean, Max, Std) [Passenger]
     - [x] Buses ea
+      - [x] Comercial Speed [m/s]
       - [x] Travel Time [s]
       - [x] Dwell Time [s]
       - [x] Queue Delay [s]
       - [x] Total Delay (Dwell + Queue) [s]
       - [x] Total Time in  Sim (Travel + Delay) [s]
-      - [x] All Busses (Mean, Max, Std)
+
     - [x] Bus Stop ea
       - [x] Capacity [Bus/h]
       - [x] Queue Length (Mean, Max, Std) [Bus]
@@ -71,3 +72,29 @@
     - [x] Passenger Dispatcher (.csv)
     - [x] Bus Dispatcher (.csv)
     - [x] Results Report (.pdf)
+
+
+---
+Backlog
+
+- 3.3. Resultados
+- 3.3.1. Datos de Entrada
+- 3.3.2. Datos Buses Simulados
+- 3.3.3. Datos Paradas Simuladas
+- 3.3.4. Datos Generales Simulacion
+- 3.5. Modelos de Datos
+- 3.5.1. Nodos
+- 3.5.2. Entidades
+- 3.5.3. Rutas
+- 3.5.4. Controlador de Simulacion
+- 3.6. Simulacion
+- 3.6.1. Inicializacion
+- 3.6.2. Ejecucion
+- 
+- 4.1. Resultados
+- 4.2. Validacion del Modelo
+- 4.3. Mejoras en la Implementacion
+- 4.3.1. Control de Errores
+- 4.3.2 Desoejar Modelos
+- 4.3.3 Fortalecer jerarquia de Nodos
+- 4.3.4 Extender Modelo de Buses
