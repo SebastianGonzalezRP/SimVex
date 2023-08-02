@@ -140,6 +140,25 @@ class Bus:
 #endregion
 
 #region Stop Operations Methods
+    def alighting_queues_transfer(self, tick):
+        for alighting_q in self.alighting_queues[:]:
+                if len(alighting_q) > 0:
+                    passenger = alighting_q[0]
+                    if passenger.alighting_time - tick <=0:
+                        self.disembark_passenger(passenger)
+                    else:
+                        passenger.alighting_time -= tick
+    
+    def boarding_queue_transfer(self,tick,stop,route):
+        if len(stop.passengers_boarding_queue[route]) > 0:
+                passenger = stop.passengers_boarding_queue[route][0]
+                if passenger.boarding_time - tick <=0:
+                    self.board_passenger(passenger)
+                    stop.leaving_passenger(passenger)
+                else:
+                    passenger.boarding_time -= tick
+
+
     def passenger_transfer(self, tick):
         stop = self.location
         route = self.route.id
@@ -148,24 +167,18 @@ class Bus:
             if sum(len(queue) for queue in self.alighting_queues) == 0:
                 stop.departing_bus(self)
                 self.node_transition()
-                
-        #Boarding Passengers
-        if len(stop.passengers_boarding_queue[route]) > 0:
-            passenger = stop.passengers_boarding_queue[route][0]
-            if passenger.boarding_time - tick <=0:
-                self.board_passenger(passenger)
-                stop.leaving_passenger(passenger)
-            else:
-                passenger.boarding_time -= tick
 
-        #Alighting Passenger 
-        for alighting_q in self.alighting_queues[:]:
-            if len(alighting_q) > 0:
-                passenger = alighting_q[0]
-                if passenger.alighting_time - tick <=0:
-                    self.disembark_passenger(passenger)
-                else:
-                    passenger.alighting_time -= tick
+        if self.door_n == 1:
+            if len(self.alighting_queues[0]) != 0:
+                self.alighting_queues_transfer(tick)
+            else:
+                self.boarding_queue_transfer(tick,stop,route)
+        else:     
+            #Boarding Passengers
+            self.boarding_queue_transfer(tick,stop,route)
+
+            #Alighting Passenger 
+            self.alighting_queues_transfer(tick)
 
     def check_queue_departure_conditions(self):
         #assert (type(self.location),Stop)

@@ -49,11 +49,11 @@ class DataAnalyzer:
         data.append(["Nº Stops Simulated: ",f"{len(self.sim_c.stops_ids)}",f"{self.sim_c.stops_ids}"])
         data.append(["Nº Intersections Simulated: ",f"{len(self.sim_c.intersections)}"])
         data.append(["Nº Routes Simulated: ",f"{len(self.sim_c.routes_ids)}",f"{self.sim_c.routes_ids}"])
-        data.append(["Simulated Distance: ",f"{self.simulation_distance} Meters"])
-        data.append(["Bus Flow: ",f"{len(self.sim_c.buses)/3600*self.sim_c.duration} [Bus/h]" ])
-        data.append(["Total Passengers Simulated",f"{len(self.sim_c.passengers)}"])
-        data.append(["Boarding Demand",f"{len(self.sim_c.boarding_passengers)}"])
-        data.append(["Alighting Demand",f"{len(self.sim_c.alighting_passengers)}"])
+        data.append(["Simulated Distance: ",f"{self.simulation_distance} [m]"])
+        data.append(["Bus Flow: ",f"{round(len(self.sim_c.buses)/3600*self.sim_c.duration)} [bus/h]" ])
+        data.append(["Total Passengers Simulated",f"{round(len(self.sim_c.passengers)/3600*self.sim_c.duration)} [pax/h]"])
+        data.append(["Boarding Demand",f"{round(len(self.sim_c.boarding_passengers)/3600*self.sim_c.duration)} [pax/h]"])
+        data.append(["Alighting Demand",f"{round(len(self.sim_c.alighting_passengers)/3600*self.sim_c.duration)} [pax/h]"])
         
         self.PDFG.append_table(data,"Simulation Input Data")
 
@@ -69,14 +69,14 @@ class DataAnalyzer:
             self.PDFG.append_table(data,None)
 
     def get_buses_stats(self):
-        #[["Bus Id","Route","Comercial Speed(m/s)","Travel Time(s)","Stop Q Time(s)","Dwell Time(s)","Intersection Time(s)","Total Delay(s)"]]
+        #[["Bus Id","Route","Comercial Speed(km/h)","Travel Time(s)","Stop Q Time(s)","Dwell Time(s)","Intersection Time(s)","Total Delay(s)"]]
         data = []
         for bus in self.sim_c.buses:
             buff = []
             buff.append(bus.id)
             buff.append(bus.route.id)
-            buff.append(round(self.simulation_distance/bus.time_log,2))
-            buff.append(bus.travel_time_log)
+            buff.append(round((self.simulation_distance*3.6)/(bus.time_log),2))
+            buff.append(round(bus.travel_time_log/60,2))
             buff.append(bus.stop_queue_time_log)
             buff.append(bus.stop_dwell_time_log)
             buff.append(bus.intersection_queue_time_log)
@@ -86,7 +86,7 @@ class DataAnalyzer:
         self.buses_data= data
 
     def build_bus_data_table(self):
-        data = [["Bus Id","Route","Comercial Speed[m/s]","Travel Time[s]","Stop Q Time[s]","Dwell Time[s]","Intersection Time[s]","Total Delay[s]"]]
+        data = [["Bus Id","Route","Comercial Speed[km/h]","Travel Time[min]","Stop Q Time[s]","Dwell Time[s]","Intersection Time[s]","Total Delay[s]"]]
         data += self.buses_data
         self.PDFG.append_table(data,"Bus Data Sheet")
 
@@ -94,7 +94,7 @@ class DataAnalyzer:
         pass
 
     def build_stop_data_table(self):
-        data = [["Stop ID","Capacity[Bus/h]","Queue Length"]]
+        data = [["Stop ID","Capacity[bus/h]","Queue Length"]]
         for stop in self.sim_c.stops:
             buff = []
             buff.append(stop.id)
@@ -125,19 +125,19 @@ class DataAnalyzer:
 
 
     def build_general_simulation_data_table(self):
-        data = [["Total Travel Time[s]","Comercial Speed[m/s]","Signal Delay[s]","Bus Stop Delay[s]"]]
+        data = [["Total Travel Time[min]","Comercial Speed[km/h]","Signal Delay[s]","Bus Stop Delay[s]"]]
         buff = []
         total_trave_time = 0
         comercial_speed = 0
         signal_delay = 0
         bus_stop_delay = 0
-        for bus in self.sim_c.completed_buses:
-            total_trave_time += bus.time_log
-            comercial_speed += self.simulation_distance/bus.time_log
+        for bus in self.sim_c.buses:
+            total_trave_time += round(bus.time_log/60,2)
+            comercial_speed += self.simulation_distance*3.6/bus.time_log
             signal_delay += bus.intersection_queue_time_log
             bus_stop_delay += bus.stop_queue_time_log + bus.stop_dwell_time_log
         buff.append(total_trave_time)
-        buff.append(round(comercial_speed/len(self.sim_c.completed_buses),2))
+        buff.append(round(comercial_speed/len(self.sim_c.buses),2))
         buff.append(signal_delay)
         buff.append(bus_stop_delay)
         data.append(buff)
