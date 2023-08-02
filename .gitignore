@@ -3,6 +3,7 @@
 *.csv
 *.json
 Sample.py
+*.exe
 
 
 
