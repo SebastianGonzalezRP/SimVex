@@ -132,11 +132,11 @@ class DataAnalyzer:
         signal_delay = 0
         bus_stop_delay = 0
         for bus in self.sim_c.buses:
-            total_trave_time += round(bus.time_log/60,2)
+            total_trave_time += bus.time_log/60
             comercial_speed += self.simulation_distance*3.6/bus.time_log
             signal_delay += bus.intersection_queue_time_log
             bus_stop_delay += bus.stop_queue_time_log + bus.stop_dwell_time_log
-        buff.append(total_trave_time)
+        buff.append(round(total_trave_time,2))
         buff.append(round(comercial_speed/len(self.sim_c.buses),2))
         buff.append(signal_delay)
         buff.append(bus_stop_delay)

@@ -169,7 +169,7 @@ class Bus:
                 self.node_transition()
 
         if self.door_n == 1:
-            if len(self.alighting_queues[0]) != 0:
+            if len(self.alighting_queues[0]) > 0:
                 self.alighting_queues_transfer(tick)
             else:
                 self.boarding_queue_transfer(tick,stop,route)
