@@ -32,26 +32,26 @@
   - [x] Intersection Controller
   - [x] Simulation Controller
 ---
-- [ ] Statistical Module
+- [x] Statistical Module
   - [x] Inputs
-    - [x] Simulated Time
+    - [x] Simulated Time [s]
     - [x] Nº Traffic Signals
     - [x] Nº Bus Stops (IDs)
     - [x] Nº Simulated Routes (IDs)
     - [x] Distance [m]
-    - [x] Bus Flow [Bus/h] **??
-    - [x] Nº Boarding Passengers
-    - [x] Nº Alighting Passengers
+    - [x] Bus Flow [bus/h]
+    - [x] Nº Boarding Passengers [pax/h]
+    - [x] Nº Alighting Passengers [pax/h]
     - [x] Traffic Signals
       - [x] Cycle Time [s]
       - [x] Green Ratio 
-  - [ ] Outputs
+  - [x] Outputs
     - [x] Passengers Data ea Stop
       - [x] Average Waiting Time (Mean, Max, Std) [s]
       - [x] Nº Passengers in Stop (Mean, Max, Std) [Passenger]
     - [x] Buses ea
-      - [x] Comercial Speed [m/s]
-      - [x] Travel Time [s]
+      - [x] Comercial Speed [km/h]
+      - [x] Travel Time [min]
       - [x] Dwell Time [s]
       - [x] Queue Delay [s]
       - [x] Total Delay (Dwell + Queue) [s]
@@ -60,11 +60,11 @@
     - [x] Bus Stop ea
       - [x] Capacity [Bus/h]
       - [x] Queue Length (Mean, Max, Std) [Bus]
-    - [ ] Arterial Road
-      - [ ] Total Travel Time
-      - [ ] Commercial Speed [m/s]
-      - [ ] Signal Delay [s]
-      - [ ] Bus Stop Delay [s]
+    - [x] Arterial Road
+      - [x] Total Travel Time [min]
+      - [x] Commercial Speed [km/h]
+      - [x] Signal Delay [s]
+      - [x] Bus Stop Delay [s]
 ---
 - [x] File System
   - [x] File Generation
@@ -72,29 +72,3 @@
     - [x] Passenger Dispatcher (.csv)
     - [x] Bus Dispatcher (.csv)
     - [x] Results Report (.pdf)
-
-
----
-Backlog
-
-- 3.3. Resultados
-- 3.3.1. Datos de Entrada
-- 3.3.2. Datos Buses Simulados
-- 3.3.3. Datos Paradas Simuladas
-- 3.3.4. Datos Generales Simulacion
-- 3.5. Modelos de Datos
-- 3.5.1. Nodos
-- 3.5.2. Entidades
-- 3.5.3. Rutas
-- 3.5.4. Controlador de Simulacion
-- 3.6. Simulacion
-- 3.6.1. Inicializacion
-- 3.6.2. Ejecucion
-- 
-- 4.1. Resultados
-- 4.2. Validacion del Modelo
-- 4.3. Mejoras en la Implementacion
-- 4.3.1. Control de Errores
-- 4.3.2 Desoejar Modelos
-- 4.3.3 Fortalecer jerarquia de Nodos
-- 4.3.4 Extender Modelo de Buses
