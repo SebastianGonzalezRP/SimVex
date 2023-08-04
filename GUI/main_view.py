@@ -150,7 +150,7 @@ def create_street_node(self,node_list):
     node_selector.bind('<<ComboboxSelected>>', lambda event: node_selector_change(self, node_selector))
     node_selector.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
 
-    length_label = tk.Label(node_container, text="Street Length", bg=grey3)
+    length_label = tk.Label(node_container, text="Street Length (m)", bg=grey3)
     length_label.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
 
     length_field = tk.Entry(node_container)
@@ -176,7 +176,7 @@ def load_street_node(self,node_container):
     node_selector.bind('<<ComboboxSelected>>', lambda event: node_selector_change(self, node_selector))
     node_selector.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
 
-    length_label = tk.Label(node_container, text="Street Length", bg=grey3)
+    length_label = tk.Label(node_container, text="Street Length (m)", bg=grey3)
     length_label.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
 
     length_field = tk.Entry(node_container)
