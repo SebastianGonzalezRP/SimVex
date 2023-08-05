@@ -1,0 +1,74 @@
+# VEXSIM TODO
+
+---
+- [x] Models 
+  - [x] Nodes
+    - [x] Start
+    - [x] Street
+    - [x] Stop
+    - [x] Intersection
+    - [x] End
+  - [x] Bus
+  - [x] Passenger
+  - [x] Route
+  - [x] Transit Network
+---
+- [x] GUI
+  - [x] Input Module
+      - [x] Create New
+        - [x] Node Definition And Creation
+        - [x] Route Definition And Creation
+        - [x] Stops Configuration
+        - [x] Route Configuration
+        - [x] Passenger Configuration
+      - [x] Re-Use Generator File
+      - [x] Load Existing Files
+  - [x] GUI Controller
+
+---
+- [x] Controllers
+  - [x] Stop Controller
+  - [x] Transit Controller
+  - [x] Intersection Controller
+  - [x] Simulation Controller
+---
+- [x] Statistical Module
+  - [x] Inputs
+    - [x] Simulated Time [s]
+    - [x] Nº Traffic Signals
+    - [x] Nº Bus Stops (IDs)
+    - [x] Nº Simulated Routes (IDs)
+    - [x] Distance [m]
+    - [x] Bus Flow [bus/h]
+    - [x] Nº Boarding Passengers [pax/h]
+    - [x] Nº Alighting Passengers [pax/h]
+    - [x] Traffic Signals
+      - [x] Cycle Time [s]
+      - [x] Green Ratio 
+  - [x] Outputs
+    - [x] Passengers Data ea Stop
+      - [x] Average Waiting Time (Mean, Max, Std) [s]
+      - [x] Nº Passengers in Stop (Mean, Max, Std) [Passenger]
+    - [x] Buses ea
+      - [x] Comercial Speed [km/h]
+      - [x] Travel Time [min]
+      - [x] Dwell Time [s]
+      - [x] Queue Delay [s]
+      - [x] Total Delay (Dwell + Queue) [s]
+      - [x] Total Time in  Sim (Travel + Delay) [s]
+
+    - [x] Bus Stop ea
+      - [x] Capacity [Bus/h]
+      - [x] Queue Length (Mean, Max, Std) [Bus]
+    - [x] Arterial Road
+      - [x] Total Travel Time [min]
+      - [x] Commercial Speed [km/h]
+      - [x] Signal Delay [s]
+      - [x] Bus Stop Delay [s]
+---
+- [x] File System
+  - [x] File Generation
+    - [x] Generator File (.json)
+    - [x] Passenger Dispatcher (.csv)
+    - [x] Bus Dispatcher (.csv)
+    - [x] Results Report (.pdf)
