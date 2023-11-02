@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import ttk
+from models.bus_model import *
+from GUI.style import *
 
 grey1 = "#D4D4D4"
 grey2 = "#B4B4B4"
@@ -10,6 +12,9 @@ grey4 = "#636363"
 
 window_width = 1280
 window_height = 800
+
+def delete_parent_container(container):
+    container.destroy()
 
 
 def destroy_frame_children(frame):
@@ -93,7 +98,7 @@ def load_fixed_template(container):
     distribution_selector.bind('<<ComboboxSelected>>', lambda event: distribution_selector_change(container,distribution_selector))
     distribution_selector.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
 
-    rate_label = tk.Label(container,text="Arrival Rate (seconds)", bg=grey3, font=('Segoe 12'))
+    rate_label = tk.Label(container,text="Rate (seconds)", bg=grey3, font=('Segoe 12'))
     rate_label.grid(row=0, column=1, padx=5, pady=5, sticky='nswe')
 
     rate_field = tk.Entry(container)
@@ -136,6 +141,22 @@ def distribution_parser(container):
     else:
         return None
 
+#region Sim Time Parameters
+
+
+def submit_time_config(self,time_list):
+
+    duration = int(time_list.winfo_children()[1].get())
+    tick = float(time_list.winfo_children()[3].get())
+    
+    self.controller.generator["Time"]["Duration"] = duration
+    self.controller.generator["Time"]["Tick"] = tick
+
+    self.load_node_creator()
+#endregion
+
+
+
 #region Node Creator
 def create_street_node(self,node_list):
 
@@ -162,9 +183,13 @@ def create_street_node(self,node_list):
     number_spinbox = ttk.Spinbox(node_container, from_=2, to=2)
     number_spinbox.grid(row=1, column=2, padx=5, pady=5, sticky='nsew')
 
-    node_container.columnconfigure(0, weight=1)
-    node_container.columnconfigure(1, weight=1)
-    node_container.columnconfigure(2, weight=1)
+    delete_button = tk.Button(node_container, text="X", bg="red", command=lambda: delete_parent_container(node_container))
+    delete_button.grid(row=0,column=3, padx= (0,2), pady=(2,0), sticky='ne')
+
+    node_container.columnconfigure(0, weight=4)
+    node_container.columnconfigure(1, weight=4)
+    node_container.columnconfigure(2, weight=4)
+    node_container.columnconfigure(3, weight=1)
 
 def load_street_node(self,node_container):
 
@@ -188,9 +213,13 @@ def load_street_node(self,node_container):
     number_spinbox = ttk.Spinbox(node_container, from_=2, to=2)
     number_spinbox.grid(row=1, column=2, padx=5, pady=5, sticky='nsew')
 
-    node_container.columnconfigure(0, weight=1)
-    node_container.columnconfigure(1, weight=1)
-    node_container.columnconfigure(2, weight=1)
+    delete_button = tk.Button(node_container, text="X", bg="red", command=lambda: delete_parent_container(node_container))
+    delete_button.grid(row=0,column=3, padx= (0,2), pady=(2,0), sticky='ne')
+
+    node_container.columnconfigure(0, weight=4)
+    node_container.columnconfigure(1, weight=4)
+    node_container.columnconfigure(2, weight=4)
+    node_container.columnconfigure(3, weight=1)
 
 def load_stop_node(self,node_container):
 
@@ -214,9 +243,13 @@ def load_stop_node(self,node_container):
     number_spinbox = ttk.Spinbox(node_container, from_=1, to=3)
     number_spinbox.grid(row=1, column=2, padx=5, pady=5, sticky='nsew')
 
-    node_container.columnconfigure(0, weight=1)
-    node_container.columnconfigure(1, weight=1)
-    node_container.columnconfigure(2, weight=1)
+    delete_button = tk.Button(node_container, text="X", bg="red", command=lambda: delete_parent_container(node_container))
+    delete_button.grid(row=0,column=3, padx= (0,2), pady=(2,0), sticky='ne')
+
+    node_container.columnconfigure(0, weight=4)
+    node_container.columnconfigure(1, weight=4)
+    node_container.columnconfigure(2, weight=4)
+    node_container.columnconfigure(3, weight=1)
 
 def load_intersection_node(self,node_container):
 
@@ -240,9 +273,13 @@ def load_intersection_node(self,node_container):
     effective_green = ttk.Spinbox(node_container, from_=0, to=1, increment=0.01)
     effective_green.grid(row=1, column=2, padx=5, pady=5, sticky='nsew')
 
-    node_container.columnconfigure(0, weight=1)
-    node_container.columnconfigure(1, weight=1)
-    node_container.columnconfigure(2, weight=1)
+    delete_button = tk.Button(node_container, text="X", bg="red", command=lambda: delete_parent_container(node_container))
+    delete_button.grid(row=0,column=3, padx= (0,2), pady=(2,0), sticky='ne')
+
+    node_container.columnconfigure(0, weight=4)
+    node_container.columnconfigure(1, weight=4)
+    node_container.columnconfigure(2, weight=4)
+    node_container.columnconfigure(3, weight=1)
 
 def node_selector_change(self, node_selector):
         selection = node_selector.get()
@@ -308,7 +345,7 @@ def create_route_container(self,route_list):
             existing_stops.insert(tk.END, node["Stop"]["id"])
 
     
-    add_stop_button = tk.Button(route_container, text="Add Stop",command=lambda: switch_stop(existing_stops,selected_stops))
+    add_stop_button = tk.Button(route_container, text="Add Stop",command=lambda: listbox_switch(existing_stops,selected_stops))
     add_stop_button.grid(row=2, column=1, padx=5, pady=5, sticky='nwe')
 
     selected_stops_label = tk.Label(route_container, text="Selected Stops", bg=grey3)
@@ -317,16 +354,19 @@ def create_route_container(self,route_list):
     selected_stops = tk.Listbox(route_container, selectmode=tk.MULTIPLE, height=5)
     selected_stops.grid(row=1, column=2, padx=5, pady=5, sticky='nwe')
     
-    remove_stop_button = tk.Button(route_container, text="Remove Stop",command=lambda: switch_stop(selected_stops, existing_stops))
+    remove_stop_button = tk.Button(route_container, text="Remove Stop",command=lambda: listbox_switch(selected_stops, existing_stops))
     remove_stop_button.grid(row=2, column=2, padx=5, pady=5, sticky='nwe')
 
+    delete_button = tk.Button(route_container, text="X", bg="red", command=lambda: delete_parent_container(route_container))
+    delete_button.grid(row=0,column=3, padx= (0,2), pady=(2,0), sticky='ne')
 
-    route_container.columnconfigure(0, weight=1)
-    route_container.columnconfigure(1, weight=1)
-    route_container.columnconfigure(2, weight=1)
+    route_container.columnconfigure(0, weight=4)
+    route_container.columnconfigure(1, weight=4)
+    route_container.columnconfigure(2, weight=4)
+    route_container.columnconfigure(3, weight=1)
     pass
 
-def switch_stop(origin,target):
+def listbox_switch(origin,target):
     selections = []
     for index in reversed(origin.curselection()):
         selections.append(origin.get(index))
@@ -339,11 +379,11 @@ def submit_routes(self, route_list):
     for route in route_list.winfo_children():
         route_id = route.winfo_children()[1].get()
         stops_id_list = list(route.winfo_children()[6].get(0,"end"))
-        print(len(stops_id_list))
         if route_id != "" and len(stops_id_list) > 0:
             self.controller.generator["Route"][route_id]= {"stops": {},
                                                     "bus_rate": {},
-                                                    "initial_occupancy":{}}
+                                                    "initial_occupancy":{},
+                                                    "bus_model":{}}
             for stop_id in stops_id_list:
                 self.controller.generator["Route"][route_id]["stops"][stop_id]= {"passenger_rate":{}}
             route_parsed_count += 1
@@ -352,8 +392,155 @@ def submit_routes(self, route_list):
             tk.messagebox.showinfo(" ",f"Route Attributes Can Not Be Empty")
             break
     if route_parsed_count > 0:
-        self.load_stop_config()
+        self.load_route_bus_config()
 
+#endregion
+
+#region Route-Bus Configuration
+
+def create_bus_model_card(bus_card_container,model_key,model_stats):
+
+    bus_card = tk.Frame(bus_card_container, bg=grey3)
+    bus_card.pack(side="left",expand=True ,fill="both", padx=5, pady=5)
+
+    model_label = tk.Label(bus_card, bg=grey3, text=model_key, font=('Helvetica 10 underline'))
+    model_label.grid(row=0, column=0, sticky="W", padx=(5,0))
+
+    door_number_label = tk.Label(bus_card, bg=grey3, text="Door Number: ")
+    door_number_label.grid(row=1,column=0, sticky="W", padx=(5,0))
+
+    door_number_value = tk.Label(bus_card, bg=grey3, text=model_stats["door_n"])
+    door_number_value.grid(row=1,column=1, sticky="W", padx=(0,2))
+
+    top_speed_label = tk.Label(bus_card, bg=grey3, text="Top Speed: ")
+    top_speed_label.grid(row=2,column=0, sticky="W", padx=(5,0))
+
+    top_speed_value = tk.Label(bus_card, bg=grey3, text=f"{model_stats["top_speed"]} (m/s)")
+    top_speed_value.grid(row=2,column=1, sticky="W", padx=(0,2))
+
+    acceleration_label = tk.Label(bus_card, bg=grey3, text="Acceleration Rate: ")
+    acceleration_label.grid(row=3,column=0, sticky="W", padx=(5,0))
+
+    acceleration_value = tk.Label(bus_card, bg=grey3, text=f"{model_stats["acc"]} (m/s2)")
+    acceleration_value.grid(row=3,column=1, sticky="W", padx=(0,2))
+
+    desceleration_label = tk.Label(bus_card, bg=grey3, text="Deceleration Rate: ")
+    desceleration_label.grid(row=4,column=0, sticky="W", padx=(5,0))
+
+    desceleration_value = tk.Label(bus_card, bg=grey3, text=f"{model_stats["desc"]} (m/s2)")
+    desceleration_value.grid(row=4,column=1, sticky="W", padx=(0,2))
+
+    bus_card.grid_rowconfigure(0,weight=1)
+    bus_card.grid_rowconfigure(1,weight=1)
+    bus_card.grid_rowconfigure(2,weight=1)
+    bus_card.grid_rowconfigure(3,weight=1)
+
+    bus_card.grid_columnconfigure(0,weight=2)
+    bus_card.grid_columnconfigure(1,weight=1)
+
+
+def create_route_bus_container(route_list,_route_id):
+
+    main_container = tk.Frame(route_list, height=110, width=200, bg=grey3)
+    main_container.pack(side="top", fill='x', padx=5, pady=5)
+
+    route_container = tk.Frame(main_container,  bg=grey3) 
+    route_container.pack(side="left", fill="y",anchor="w",padx=5, pady=5)
+
+    route_label = tk.Label(route_container, text="Route ID:",bg=grey3, font=('Segoe 12') )
+    route_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+
+    route_id = tk.Label(route_container, text=_route_id, bg=grey3, font=('Segoe 12'))
+    route_id.grid(row=0, column=1, padx=5, pady=5, sticky='we')
+
+    model_container = tk.Frame(main_container,bg=grey3,)
+    model_container.pack(side="left", fill="both",expand=True, anchor="w",padx=5, pady=5)
+
+    available_models_label = tk.Label(model_container, text="Available Models", bg=grey3)
+    available_models_label.grid(row=0, column=0, padx=10, pady=5, sticky='nswe')
+
+    available_models = tk.Listbox(model_container, selectmode=tk.MULTIPLE, height=5)
+    available_models.grid(row=1, column=0, padx=10, pady=5, sticky='nwe')
+    for model in bus_models:
+        available_models.insert(tk.END, model)
+
+    add_model_button = tk.Button(model_container, text="Add Model",command=lambda: listbox_switch(available_models,selected_models))
+    add_model_button.grid(row=2, column=0, padx=10, pady=5, sticky='nwe')
+
+    selected_models_label = tk.Label(model_container, text="Selected Models", bg=grey3)
+    selected_models_label.grid(row=0, column=1, padx=10, pady=5, sticky='nswe')
+
+    selected_models = tk.Listbox(model_container, selectmode=tk.MULTIPLE, height=5)
+    selected_models.grid(row=1, column=1, padx=10, pady=5, sticky='nwe')
+    
+    remove_models_button = tk.Button(model_container, text="Remove Model",command=lambda: listbox_switch(selected_models, available_models))
+    remove_models_button.grid(row=2, column=1, padx=10, pady=5, sticky='nwe')
+
+    model_container.columnconfigure(0, weight=1)
+    model_container.columnconfigure(1, weight=1)
+
+def parse_route_bus(self,route_id, selected_models):
+    for model in selected_models:
+        self.controller.generator["Route"][route_id]["bus_model"][model] = bus_models[model]
+
+
+
+def submit_route_bus_config(self,route_list):
+
+    route_parsed_count = 0
+    route_count  = len(route_list.winfo_children())
+    for main_container in route_list.winfo_children():
+        route_container = main_container.winfo_children()[0]
+        route_id = route_container.winfo_children()[1].cget("text")
+
+        model_container = main_container.winfo_children()[1]
+        selected_models = list(model_container.winfo_children()[4].get(0,"end"))
+
+        if len(selected_models) > 0:
+            parse_route_bus(self,route_id,selected_models)
+            route_parsed_count +=1
+        else:
+            route_parsed_count = 0
+            tk.messagebox.showinfo(" ",f"Route {route_id} is missing Bus Model")
+            break
+        if route_parsed_count == route_count:
+            self.load_route_arrival_config()
+
+        
+#endregion
+
+#region Route Arrival Configuration
+def create_route_config_container(route_list,_route_id):
+    main_container = tk.Frame(route_list, height=110, width=200, bg=grey3)
+    main_container.pack(side="top", fill='x', padx=5, pady=5)
+
+    main_container.columnconfigure(0, weight=1)
+    main_container.columnconfigure(1, weight=2)
+
+    route_container = tk.Frame(main_container, height=110, width=200, bg=grey3)
+    route_container.grid(row=0, column=0, padx=(5,0), pady=5, sticky='we')
+
+    route_container.columnconfigure(0, weight=0)
+
+    route_label = tk.Label(route_container, text="Route ID:",bg=grey3, font=('Segoe 12') )
+    route_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+
+    route_id = tk.Label(route_container, text=_route_id, bg=grey3, font=('Segoe 12'))
+    route_id.grid(row=0, column=1, padx=5, pady=5, sticky='we')
+
+    distribution_container = tk.Frame(main_container, height=110, bg=grey3)
+    distribution_container.grid(row=0, column=1, padx=5, pady=5, sticky='we') 
+
+    load_exponencial_template(distribution_container)
+
+def submit_route_config(self, route_list):
+    for main_container in route_list.winfo_children():
+        data_container = main_container.winfo_children()[0]
+        distribution_container = main_container.winfo_children()[1]
+        route_id = data_container.winfo_children()[1]["text"]
+        distribution = distribution_parser(distribution_container)
+        self.controller.generator["Route"][route_id]["bus_rate"] = distribution
+    self.load_passenger_arrival_config()
 #endregion
 
 #region Stop Configuration
@@ -395,40 +582,6 @@ def submit_stop_config(self, stop_list):
         stop_id = data_container.winfo_children()[3]["text"]
         distribution = distribution_parser(distribution_container)
         self.controller.generator["Route"][route_id]["stops"][stop_id]["passenger_rate"] = distribution
-    self.load_route_config()
-#endregion
-
-#region Route Configuration
-def create_route_config_container(route_list,_route_id):
-    main_container = tk.Frame(route_list, height=110, width=200, bg=grey3)
-    main_container.pack(side="top", fill='x', padx=5, pady=5)
-
-    main_container.columnconfigure(0, weight=1)
-    main_container.columnconfigure(1, weight=2)
-
-    route_container = tk.Frame(main_container, height=110, width=200, bg=grey3)
-    route_container.grid(row=0, column=0, padx=(5,0), pady=5, sticky='we')
-
-    route_container.columnconfigure(0, weight=0)
-
-    route_label = tk.Label(route_container, text="Route ID:",bg=grey3, font=('Segoe 12') )
-    route_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
-
-    route_id = tk.Label(route_container, text=_route_id, bg=grey3, font=('Segoe 12'))
-    route_id.grid(row=0, column=1, padx=5, pady=5, sticky='we')
-
-    distribution_container = tk.Frame(main_container, height=110, bg=grey3)
-    distribution_container.grid(row=0, column=1, padx=5, pady=5, sticky='we') 
-
-    load_exponencial_template(distribution_container)
-
-def submit_route_config(self, route_list):
-    for main_container in route_list.winfo_children():
-        data_container = main_container.winfo_children()[0]
-        distribution_container = main_container.winfo_children()[1]
-        route_id = data_container.winfo_children()[1]["text"]
-        distribution = distribution_parser(distribution_container)
-        self.controller.generator["Route"][route_id]["bus_rate"] = distribution
     self.load_passenger_action_config()
 #endregion
 
@@ -538,12 +691,13 @@ def open_csv_file_dialog(field):
         field.insert(0,file_path)
 
 #=================================App Class=======================================#
-#region MainView
+#region MainView Class
 class MainView():
     def __init__(self,controller):
         self.root = tk.Tk()
         self.root.geometry("400x400")
         self.root.title("SimVex")
+        self.root.configure(bg=bg_color1)
         self.root.resizable(False,False)
         self.frame = None
 
@@ -552,16 +706,19 @@ class MainView():
 
 #region Main View
     def load_main_view(self):
-        self.frame = tk.Frame(self.root)
+        self.frame = tk.Frame(self.root, bg=bg_color1)
         self.frame.pack()
 
-        button1 = tk.Button(master=self.frame, width=250, height=150, text="Create New Simulation", command=self.load_create_new)
-        button2 = tk.Button(master=self.frame, width=250, height=150, text="Re-Use File", command=self.load_reuse)
-        button3 = tk.Button(master=self.frame, width=250, height=150, text="Load Files", command=self.load_existing_file)
+        button1 = tk.Button(master=self.frame, width=250, height=150, bg=bg_color2, 
+                            text="Create New Simulation",command=self.load_create_new)
+        button2 = tk.Button(master=self.frame, width=250, height=150, bg=bg_color2, 
+                            text="Re-Use File", command=self.load_reuse)
+        button3 = tk.Button(master=self.frame, width=250, height=150, bg=bg_color2, 
+                            text="Load Files", command=self.load_existing_file)
 
-        button1.grid(row=0, column=0, padx=10, pady=10)
-        button2.grid(row=1, column=0, padx=10, pady=10)
-        button3.grid(row=2, column=0, padx=10, pady=10)
+        button1.grid(row=0, column=0, padx=5, pady=(5,5))
+        button2.grid(row=1, column=0, padx=5, pady=(0,5))
+        button3.grid(row=2, column=0, padx=5, pady=(0,5))
 
         self.frame.grid_rowconfigure(0, weight=1)
         self.frame.grid_rowconfigure(1, weight=1)
@@ -575,38 +732,46 @@ class MainView():
         self.frame.destroy()
         self.root.geometry(f"{window_width}x{window_height}")
 
-        self.frame = tk.Frame(self.root, background=grey1)
+        self.frame = tk.Frame(self.root, background=bg_color1)
         self.frame.pack(padx = 5, pady = 5, fill = 'both', expand = True)
 
         self.load_side_panel()
-        self.load_node_creator()
+        self.load_time_config()
         
 #region Side Panel
     def load_side_panel(self):
-        side_panel = tk.Frame(self.frame, width= window_width//6, bg=grey2)
+        side_panel = tk.Frame(self.frame, width= window_width//6, bg=bg_color2)
         side_panel.pack(side="left",fill='y', padx=5, pady=5)
 
-        node_creator_button = tk.Button(side_panel, text="Nodes Creator")
+        time_config_button = tk.Button(side_panel,text="Time Configuration",command=self.load_time_config)
+        time_config_button.config(state="disabled")
+        time_config_button.pack(side="top",fill="both", pady=5, padx=5)
+
+        node_creator_button = tk.Button(side_panel, text="Nodes Creator", command=self.load_node_creator)
         node_creator_button.config(state="disabled")
         node_creator_button.pack(side="top",fill="both", pady=5, padx=5)
 
-        route_creator_button = tk.Button(side_panel, text="Route Creator")
+        route_creator_button = tk.Button(side_panel, text="Route Creator", command=self.load_route_creator)
         route_creator_button.config(state="disabled")
         route_creator_button.pack(side="top",fill="both", pady=5, padx=5)
 
-        stop_config_button = tk.Button(side_panel, text="Stop Configuration")
-        stop_config_button.config(state="disabled")
-        stop_config_button.pack(side="top",fill="both", pady=5, padx=5)
+        route_bus_button = tk.Button(side_panel, text="Route-Bus Configuration", command=self.load_route_bus_config)
+        route_bus_button.config(state="disabled")
+        route_bus_button.pack(side="top",fill="both", pady=5, padx=5)
 
-        route_configuration_button = tk.Button(side_panel, text="Route Configuration")
-        route_configuration_button.config(state="disabled")
-        route_configuration_button.pack(side="top",fill="both", pady=5, padx=5)
+        route_arrival_button = tk.Button(side_panel, text="Route-Arrival Configuration", command= self.load_route_arrival_config)
+        route_arrival_button.config(state="disabled")
+        route_arrival_button.pack(side="top",fill="both", pady=5, padx=5)
 
-        passenger_action_configuration_button = tk.Button(side_panel, text="Passenger Action Configuration")
+        passanger_arrival_config_button = tk.Button(side_panel, text="Passanger Arrival Configuration", command=self.load_passenger_arrival_config)
+        passanger_arrival_config_button.config(state="disabled")
+        passanger_arrival_config_button.pack(side="top",fill="both", pady=5, padx=5)
+
+        passenger_action_configuration_button = tk.Button(side_panel, text="Passenger Action Configuration", command=self.load_passenger_action_config)
         passenger_action_configuration_button.config(state="disabled")
         passenger_action_configuration_button.pack(side="top",fill="both", pady=5, padx=5)
 
-        passenger_occupancy_configuration_button = tk.Button(side_panel, text="Passenger Occupancy Configuration")
+        passenger_occupancy_configuration_button = tk.Button(side_panel, text="Passenger Occupancy Configuration",command= self.load_passenger_occupancy_config)
         passenger_occupancy_configuration_button.config(state="disabled")
         passenger_occupancy_configuration_button.pack(side="top",fill="both", pady=5, padx=5)
 
@@ -617,7 +782,7 @@ class MainView():
     def update_side_panel_activity(self, index):
         side_buttons = self.frame.winfo_children()[0].winfo_children()
         for i, button in enumerate(side_buttons):
-            if index == i:
+            if i <= index:
                 button.config(state="active")
             else:
                 button.config(state="disable")
@@ -627,9 +792,56 @@ class MainView():
         generator_file_button.config(state="active")
 #endregion
 
+#region Main Panel
+
+    def load_time_config(self):
+
+        self.controller.generator["Time"]["Duration"] = None
+        self.controller.generator["Time"]["Tick"] = None
+
+        self.update_side_panel_activity(0)
+
+        try:
+            self.frame.winfo_children()[1].destroy()
+        except:
+            pass
+
+        main_panel = tk.Frame(self.frame, bg=bg_color2)
+        main_panel.pack(side="right", fill="both", padx=5, pady=5, expand=True)
+
+        title_label = tk.Label(main_panel, bg=bg_color2, text="Simulation Time Configuration", font=('Segoe 14'))
+        title_label.pack(side="top", fill="x", padx=5, pady=5)
+
+        time_list = tk.Frame(main_panel, bg=bg_color3)
+        time_list.pack(fill='both', expand=True, padx=5, pady=5)
+
+        duration_label = tk.Label(time_list, text="Simulation Duration (s)", bg=bg_color3)
+        duration_label.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
+
+        duration_field = tk.Entry(time_list)
+        duration_field.grid(row=1, column=1, padx=5, pady=5, sticky='nsew')
+
+        tick_label = tk.Label(time_list, text="Tick Duration (s)", bg=bg_color3)
+        tick_label.grid(row=0, column=2, padx=5, pady=5, sticky='nsew')
+
+        tick_spinbox = ttk.Spinbox(time_list, from_=0, to=1,increment=0.05)
+        tick_spinbox.grid(row=1, column=2, padx=5, pady=5, sticky='nsew')
+
+        time_list.columnconfigure(0, weight=1)
+        time_list.columnconfigure(1, weight=1)
+        time_list.columnconfigure(2, weight=1)
+        time_list.columnconfigure(3, weight=1)
+
+        submit_time_config_button = tk.Button(main_panel, text="Submit Time Configuration",command=lambda: submit_time_config(self, time_list))
+        submit_time_config_button.pack(side="bottom", fill="x", pady=5, padx=5)  
+        pass
+
     def load_node_creator(self):
         
-        self.update_side_panel_activity(0)
+        self.controller.generator["Node"] = []
+
+        self.update_side_panel_activity(1)
+        self.frame.winfo_children()[1].destroy()
 
         main_panel = tk.Frame(self.frame, bg=grey2)
         main_panel.pack(side="right", fill="both", padx=5, pady=5, expand=True)
@@ -645,7 +857,10 @@ class MainView():
         submit_nodes_button.pack(side="bottom", fill="x", pady=5, padx=5)   
 
     def load_route_creator(self):
-        self.update_side_panel_activity(1)
+
+        self.controller.generator["Route"]= {}
+
+        self.update_side_panel_activity(2)
         self.frame.winfo_children()[1].destroy()
 
         main_panel = tk.Frame(self.frame, bg=grey2)
@@ -659,12 +874,70 @@ class MainView():
 
         route_list.pack(side="top",fill='both', expand=True, padx=5, pady=5)
 
-
         submit_routes_button = tk.Button(main_panel, text="Submit Routes",command=lambda: submit_routes(self, route_list))
         submit_routes_button.pack(side="bottom", fill="x", pady=5, padx=5)
         
-    def load_stop_config(self):
-        self.update_side_panel_activity(2)
+    def load_route_bus_config(self):
+
+        for route in self.controller.generator["Route"]:
+            self.controller.generator["Route"][route]["bus_rate"]= {}
+            self.controller.generator["Route"][route]["initial_occupanccy"]= {}
+            self.controller.generator["Route"][route]["bus_model"]= {}
+
+        self.update_side_panel_activity(3)
+        self.frame.winfo_children()[1].destroy()
+
+        main_panel = tk.Frame(self.frame, bg=grey2)
+        main_panel.pack(side="right", fill="both", padx=5, pady=5, expand=True)
+
+        title_label = tk.Label(main_panel, bg=grey2, text="Route Bus Model Configuration", font=('Segoe 14'))
+        title_label.pack(side="top", fill="x", padx=5, pady=5)
+
+        bus_card_list = tk.Frame(main_panel)
+        bus_card_list.pack(side="top",fill="x", padx=5)
+
+        for model in bus_models:
+            create_bus_model_card(bus_card_list,model,bus_models[model])
+
+
+        route_list = tk.Frame(main_panel)
+        route_list.pack(side="top",fill='both', expand=True, padx=5, pady=5)
+
+        for route_id in self.controller.generator["Route"].keys():
+            create_route_bus_container(route_list,route_id)
+
+        submit_route_bus_button = tk.Button(main_panel, text="Submit Route-Bus Configuration",command=lambda: submit_route_bus_config(self, route_list))
+        submit_route_bus_button.pack(side="bottom", fill="x", pady=5, padx=5)
+
+    def load_route_arrival_config(self):
+
+        for route in self.controller.generator["Route"]:
+            self.controller.generator["Route"][route]["bus_rate"]= {}
+
+        self.update_side_panel_activity(4)
+        self.frame.winfo_children()[1].destroy()
+
+        main_panel = tk.Frame(self.frame, bg=grey2)
+        main_panel.pack(side="right", fill="both", padx=5, pady=5, expand=True)
+
+        title_label = tk.Label(main_panel, bg=grey2, text="Route Bus Arrival Configuration", font=('Segoe 14'))
+        title_label.pack(side="top", fill="x", padx=5, pady=5)
+
+        route_list = tk.Frame(main_panel)
+        route_list.pack(side="top",fill='both', expand=True, padx=5, pady=5)
+
+        for route_id in self.controller.generator["Route"].keys():
+            create_route_config_container(route_list,route_id)
+
+        submit_route_config_button = tk.Button(main_panel, text="Submit Bus Arrival Rate",command=lambda: submit_route_config(self, route_list))
+        submit_route_config_button.pack(side="bottom", fill="x", pady=5, padx=5)
+
+    def load_passenger_arrival_config(self):
+
+        for route in self.controller.generator["Route"]:
+            self.controller.generator["Route"][route]["passenger_rate"]= {}
+
+        self.update_side_panel_activity(5)
         self.frame.winfo_children()[1].destroy()
 
         main_panel = tk.Frame(self.frame, bg=grey2)
@@ -687,27 +960,11 @@ class MainView():
         submit_stop_config_button = tk.Button(main_panel, text="Submit Passenger Arrival Rate",command=lambda: submit_stop_config(self, stop_list))
         submit_stop_config_button.pack(side="bottom", fill="x", pady=5, padx=5)
 
-    def load_route_config(self):
-        self.update_side_panel_activity(3)
-        self.frame.winfo_children()[1].destroy()
-
-        main_panel = tk.Frame(self.frame, bg=grey2)
-        main_panel.pack(side="right", fill="both", padx=5, pady=5, expand=True)
-
-        title_label = tk.Label(main_panel, bg=grey2, text="Route Bus Arrival Configuration", font=('Segoe 14'))
-        title_label.pack(side="top", fill="x", padx=5, pady=5)
-
-        route_list = tk.Frame(main_panel)
-        route_list.pack(side="top",fill='both', expand=True, padx=5, pady=5)
-
-        for route_id in self.controller.generator["Route"].keys():
-            create_route_config_container(route_list,route_id)
-
-        submit_route_config_button = tk.Button(main_panel, text="Submit Bus Arrival Rate",command=lambda: submit_route_config(self, route_list))
-        submit_route_config_button.pack(side="bottom", fill="x", pady=5, padx=5)
-
     def load_passenger_action_config(self):
-        self.update_side_panel_activity(4)
+
+        self.controller.generator["Passenger"] = {}
+
+        self.update_side_panel_activity(6)
         self.frame.winfo_children()[1].destroy()
 
         main_panel = tk.Frame(self.frame, bg=grey2)
@@ -726,7 +983,11 @@ class MainView():
         submit_passenger_action_config_button.pack(side="bottom", fill="x", pady=5, padx=5)
 
     def load_passenger_occupancy_config(self):
-        self.update_side_panel_activity(5)
+
+        for route in self.controller.generator["Route"]:
+            self.controller.generator["Route"][route]["initial_occupancy"]= {}
+
+        self.update_side_panel_activity(7)
         self.frame.winfo_children()[1].destroy()
 
         main_panel = tk.Frame(self.frame, bg=grey2)
@@ -749,6 +1010,7 @@ class MainView():
         self.enable_generator_file_button()
         self.frame.winfo_children()[1].destroy()
         pass
+#endregion
 #endregion
 #region Reuse Generator File 
 

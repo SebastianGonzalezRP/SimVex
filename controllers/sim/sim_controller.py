@@ -3,7 +3,6 @@ from models.transit_network import TransitNetwork as TN
 from models.route import Route
 from factory.bus_factory import *
 from factory.passenger_factory import * 
-import configparser
 
 from factory.file_generator.utils import load_csv, load_json
 
@@ -13,11 +12,8 @@ class SimController:
         self.passenger_data = None
         self.bus_data = None
 
-
-        config = configparser.ConfigParser()
-        config.read(".config")
-        self.duration = int(config.get('SimTime', 'sim_duration'))
-        self.tick = float(config.get('SimTime', 'sim_tick'))
+        self.duration = None
+        self.tick = None
 
         self.transit_network = []
         self.routes = []
@@ -44,6 +40,10 @@ class SimController:
         self.generator = load_json(generator_path)
         self.passenger_data = load_csv(passenger_dispatch_path)
         self.bus_data = load_csv(bus_dispatch_path)
+
+    def load_time_config(self):
+        self.duration = self.generator["Time"]["Duration"]
+        self.tick = self.generator["Time"]["Tick"]
 
     def create_nodes(self):
         for node in self.generator["Node"]:
@@ -273,6 +273,7 @@ class SimController:
 #MainLoop Functions
     def initialize_sim(self):
         if self.generator != None and self.passenger_data != None and self.bus_data != None:
+            self.load_time_config()
             self.create_nodes()
             self.create_routes()
             self.assign_operating_routes()

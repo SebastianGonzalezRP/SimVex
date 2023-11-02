@@ -1,4 +1,3 @@
-import configparser
 from factory.file_generator.utils import load_json
 
 class ViewController:
@@ -6,17 +5,12 @@ class ViewController:
         self.complete = False
         self.app_mode = None
 
-        config = configparser.ConfigParser()
-        config.read(".config")
         self.generator = {
         "Time":{
-            "Duration": int(config.get('SimTime', 'sim_duration')),
-            "Tick": float(config.get('SimTime', 'sim_tick'))},
+            "Duration": None,
+            "Tick": None},
         "Node":[],
         "Route":{},
-        "Buses":{"top_speed": float(config.get('Buses', 'top_speed')), 
-                 "acc":float(config.get('Buses', 'acceleration')),
-                 "desc":float(config.get('Buses', 'deceleration'))},
         "Passenger":{}}
 
         self.passenger_dispatcher = None
