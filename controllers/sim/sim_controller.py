@@ -149,15 +149,23 @@ class SimController:
     
 
     def create_bus_construction_params(self,bus_data):
+        #bus_Data: [t_in, ID, route, model]
         #construction_params = [arrival_time, id, route, door_n, top_speed,acc, desc]
+        
         arrival_time = int(bus_data[0])
         bus_id = bus_data[1]
-        bus_route = self.get_route_by_id(bus_data[2])
-        door_n = int(bus_data[3])
-        top_speed = float(self.generator["Buses"]["top_speed"])
-        acc = float(self.generator["Buses"]["acc"])
-        desc = float(self.generator["Buses"]["desc"])
-        return [arrival_time,bus_id,bus_route,door_n,top_speed,acc,desc]
+        route_id = bus_data[2]
+        bus_model = bus_data[3]
+
+        bus_route_object = self.get_route_by_id(route_id)
+        bus_model_specs = self.generator["Route"][route_id]["bus_model"][bus_model]
+
+        door_n = int(bus_model_specs["door_n"])
+        top_speed = float(bus_model_specs["top_speed"])
+        acc = float(bus_model_specs["acc"])
+        desc = float(bus_model_specs["desc"])
+
+        return [arrival_time,bus_id,bus_route_object,door_n,top_speed,acc,desc]
 
     def create_bus_dispatcher(self):
         self.bus_dispatcher = self.buses[:]

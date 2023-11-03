@@ -1,25 +1,26 @@
-from models.nodes.start import Start
-from models.nodes.stop import Stop
-from models.nodes.intersection import Intersection
-from models.nodes.street import Street
-from models.route import Route
-from models.bus_model import BusModel
-
-
+from .nodes.start import Start
+from .nodes.stop import Stop
+from .nodes.intersection import Intersection
+from .nodes.street import Street
+from .route import Route
 
 class Bus:
     def __init__(self,
                  arrival_time:int, 
                  id: str,
                  route: Route, 
-                 model: BusModel):
+                 door_n: int,  
+                 top_speed: float,
+                 acc: float,      
+                 desc: float):
     
         self.arrival_time = arrival_time
-
         self.id = id
         self.route = route
-        
-        self.model = model
+        self.door_n = door_n
+        self.top_speed = top_speed
+        self.acc = acc 
+        self.desc = desc
 
         self.location = None #Node
         self.position = None  #Relative to Node/Location First Position is Node Start
@@ -54,19 +55,19 @@ class Bus:
                 alighting_queue.remove(passenger)
 
     def generate_alighting_queues(self):
-        #Isolate all passengers model.descending in next node (Stop)
+        #Isolate all passengers descending in next node (Stop)
         alighting_passengers = []
         for passenger in self.passengers:
             if passenger.destiny == self.next_node.id:
                 alighting_passengers.append(passenger)
 
-        if (self.model.door_n <= 2):
+        if (self.door_n <= 2):
             self.alighting_queues = [alighting_passengers]
         else:
-            quotient, remainder = divmod(len(alighting_passengers), self.model.door_n - 1)
+            quotient, remainder = divmod(len(alighting_passengers), self.door_n - 1)
             parts = []
             index = 0
-            for i in range(self.model.door_n - 1):
+            for i in range(self.door_n - 1):
                 if i < remainder:
                     size = quotient + 1
                 else:
@@ -79,17 +80,17 @@ class Bus:
 
     def update_speed(self, tick):
         if self.status == "Accelerating":
-            if (self.speed + self.model.acc * tick) >= self.model.top_speed:
-                self.speed = self.model.top_speed
+            if (self.speed + self.acc * tick) >= self.top_speed:
+                self.speed = self.top_speed
                 self.status = "Cruising"
             else:
-                self.speed += self.model.acc * tick
+                self.speed += self.acc * tick
         elif self.status == "Decelerating":
-            if (self.speed - self.model.desc * tick) <= 0:
+            if (self.speed - self.desc * tick) <= 0:
                 self.speed = 0
                 self.status = "Stationary"
             else:
-                self.speed -= self.model.desc * tick
+                self.speed -= self.desc * tick
         self.speed = round(self.speed,2)
 
     def update_position(self, tick):
@@ -119,7 +120,7 @@ class Bus:
 
     def update_breaking_point(self):
         if type(self.next_node) in [Stop, Intersection]:
-            breaking_distance = (self.speed**2)/(2*self.model.desc)
+            breaking_distance = (self.speed**2)/(2*self.desc)
             last_stationary_bus_position = self.next_node.last_occupied_queue_spot()
 
             self.breaking_point = self.location.length - (breaking_distance + (15 * last_stationary_bus_position))
@@ -162,7 +163,7 @@ class Bus:
                 stop.departing_bus(self)
                 self.node_transition()
 
-        if self.model.door_n == 1:
+        if self.door_n == 1:
             if len(self.alighting_queues[0]) > 0:
                 self.alighting_queues_transfer(tick)
             else:
@@ -271,7 +272,7 @@ class Bus:
     def enter_simulation(self):
         self.node_transition()
         self.status = "Cruising"
-        self.speed = self.model.top_speed
+        self.speed = self.top_speed
         self.update_breaking_point()
         self.update_stop_flag()
 

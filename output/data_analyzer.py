@@ -2,12 +2,9 @@ from factory.file_generator.pdf_generator import PDFGenerator
 from models.nodes.street import Street
 from models.nodes.stop import Stop
 from models.nodes.intersection import Intersection
-from scipy import stats
-import seaborn as sns
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import statistics
 
 
 
@@ -146,6 +143,7 @@ class DataAnalyzer:
 
 
 
+    """
     def build_speed_by_route_graph(self):
         graph_file_path = "files/tmp/graph.png" 
         data = self.get_bus_commercial_speed()
@@ -157,7 +155,7 @@ class DataAnalyzer:
         plt.ylabel('Average Speed (m/s)')
         plt.savefig(graph_file_path)
         self.PDFG.append_graph("Average Speed by Route")
-
+    """
 
     def generate_data(self):
         self.get_simulated_distance()

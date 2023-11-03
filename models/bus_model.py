@@ -1,16 +1,4 @@
-class BusModel:
-    def __init__(self,
-                bus_model: str,
-                door_n: int,
-                top_speed: float,
-                acceleration: float,
-                desceleration: float):
-        
-        self.name = bus_model
-        self.door_n = door_n
-        self.top_speed = top_speed
-        self.acc = acceleration
-        self.desc = desceleration
+# Model_Name: {"door_n": int, "top_speed": float, "acc": float, "desc": float}
 
 
 bus_models = {

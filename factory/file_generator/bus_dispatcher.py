@@ -2,7 +2,8 @@ from factory.file_generator.utils import *
 
 from factory.file_generator.dispatcher import Dispatcher
 
-#BUS: [t_in, ID, route, door_n]
+
+#BUS: [t_in, ID, route, model]
 
 
 class Bus_Dispatcher(Dispatcher):
@@ -11,7 +12,6 @@ class Bus_Dispatcher(Dispatcher):
         self.route_bus_rate = []
         self.bus_hyperparameter = []
         self.to_file = []
-
         self.boarded_passenger = []
         self.passenger_hyperparameter = []
 
@@ -25,9 +25,6 @@ class Bus_Dispatcher(Dispatcher):
             bus_rate_info = route_val['bus_rate']
             self.route_bus_rate.append((route_key, bus_rate_info))
 
-    def get_bus_hyperparameter(self):
-        self.bus_hyperparameter.append(self.generator['Buses'])
-
     def generate_bus_arrival(self):
         for params in self.route_bus_rate:
             time = self.duration
@@ -40,9 +37,10 @@ class Bus_Dispatcher(Dispatcher):
                 id = len(self.to_file)
                 arrival = random_value(bus_arrival_distribution, bus_arrival_attributes)
                 cumulative_arrival += arrival
-                door_n = random.randint(1,4)
+                model_list = list(self.generator["Route"][route]["bus_model"].keys())
+                model = random.choice(model_list)
                 
-                bus = [cumulative_arrival,f"b-{id}",route,door_n]
+                bus = [cumulative_arrival,f"b-{id}",route,model]
                 if cumulative_arrival<time:
                     self.to_file.append(bus)
             
@@ -93,7 +91,6 @@ class Bus_Dispatcher(Dispatcher):
 
     def generate_dispatcher_file(self,serial):
         self.get_bus_route_rates()
-        self.get_bus_hyperparameter()
         self.generate_bus_arrival()
         self.generate_boarded_passengers()
         write_csv(self.boarded_passenger,serial,"passenger_dispatcher.csv")
