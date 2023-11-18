@@ -146,13 +146,17 @@ def distribution_parser(container):
 
 def submit_time_config(self,time_list):
 
-    duration = int(time_list.winfo_children()[1].get())
-    tick = float(time_list.winfo_children()[3].get())
-    
-    self.controller.generator["Time"]["Duration"] = duration
-    self.controller.generator["Time"]["Tick"] = tick
+    try:
+        duration = int(time_list.winfo_children()[1].get())
+        tick = float(time_list.winfo_children()[3].get())
+        
+        self.controller.generator["Time"]["Duration"] = duration
+        self.controller.generator["Time"]["Tick"] = tick
 
-    self.load_node_creator()
+        self.load_node_creator()
+    except:
+        tk.messagebox.showinfo(" ",f"Fields may not be empty")
+
 #endregion
 
 
@@ -697,7 +701,7 @@ class MainView():
         self.root = tk.Tk()
         self.root.geometry("400x400")
         self.root.title("SimVex")
-        self.root.configure(bg=bg_color1)
+        self.root.configure(bg=grey1)
         self.root.resizable(False,False)
         self.frame = None
 
@@ -706,14 +710,14 @@ class MainView():
 
 #region Main View
     def load_main_view(self):
-        self.frame = tk.Frame(self.root, bg=bg_color1)
+        self.frame = tk.Frame(self.root)
         self.frame.pack()
 
-        button1 = tk.Button(master=self.frame, width=250, height=150, bg=bg_color2, 
+        button1 = tk.Button(master=self.frame, width=250, height=150, 
                             text="Create New Simulation",command=self.load_create_new)
-        button2 = tk.Button(master=self.frame, width=250, height=150, bg=bg_color2, 
+        button2 = tk.Button(master=self.frame, width=250, height=150, 
                             text="Re-Use File", command=self.load_reuse)
-        button3 = tk.Button(master=self.frame, width=250, height=150, bg=bg_color2, 
+        button3 = tk.Button(master=self.frame, width=250, height=150, 
                             text="Load Files", command=self.load_existing_file)
 
         button1.grid(row=0, column=0, padx=5, pady=(5,5))
@@ -732,7 +736,7 @@ class MainView():
         self.frame.destroy()
         self.root.geometry(f"{window_width}x{window_height}")
 
-        self.frame = tk.Frame(self.root, background=bg_color1)
+        self.frame = tk.Frame(self.root, background=grey1)
         self.frame.pack(padx = 5, pady = 5, fill = 'both', expand = True)
 
         self.load_side_panel()
@@ -740,7 +744,7 @@ class MainView():
         
 #region Side Panel
     def load_side_panel(self):
-        side_panel = tk.Frame(self.frame, width= window_width//6, bg=bg_color2)
+        side_panel = tk.Frame(self.frame, width= window_width//6, bg=grey2)
         side_panel.pack(side="left",fill='y', padx=5, pady=5)
 
         time_config_button = tk.Button(side_panel,text="Time Configuration",command=self.load_time_config)
@@ -806,22 +810,22 @@ class MainView():
         except:
             pass
 
-        main_panel = tk.Frame(self.frame, bg=bg_color2)
+        main_panel = tk.Frame(self.frame, bg=grey2)
         main_panel.pack(side="right", fill="both", padx=5, pady=5, expand=True)
 
-        title_label = tk.Label(main_panel, bg=bg_color2, text="Simulation Time Configuration", font=('Segoe 14'))
+        title_label = tk.Label(main_panel, bg=grey1, text="Simulation Time Configuration", font=('Segoe 14'))
         title_label.pack(side="top", fill="x", padx=5, pady=5)
 
-        time_list = tk.Frame(main_panel, bg=bg_color3)
+        time_list = tk.Frame(main_panel, bg=grey1)
         time_list.pack(fill='both', expand=True, padx=5, pady=5)
 
-        duration_label = tk.Label(time_list, text="Simulation Duration (s)", bg=bg_color3)
+        duration_label = tk.Label(time_list, text="Simulation Duration (s)", bg=grey1)
         duration_label.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
 
         duration_field = tk.Entry(time_list)
         duration_field.grid(row=1, column=1, padx=5, pady=5, sticky='nsew')
 
-        tick_label = tk.Label(time_list, text="Tick Duration (s)", bg=bg_color3)
+        tick_label = tk.Label(time_list, text="Tick Duration (s)", bg=grey1)
         tick_label.grid(row=0, column=2, padx=5, pady=5, sticky='nsew')
 
         tick_spinbox = ttk.Spinbox(time_list, from_=0, to=1,increment=0.05)
@@ -881,7 +885,7 @@ class MainView():
 
         for route in self.controller.generator["Route"]:
             self.controller.generator["Route"][route]["bus_rate"]= {}
-            self.controller.generator["Route"][route]["initial_occupanccy"]= {}
+            self.controller.generator["Route"][route]["initial_occupancy"]= {}
             self.controller.generator["Route"][route]["bus_model"]= {}
 
         self.update_side_panel_activity(3)
@@ -935,7 +939,8 @@ class MainView():
     def load_passenger_arrival_config(self):
 
         for route in self.controller.generator["Route"]:
-            self.controller.generator["Route"][route]["passenger_rate"]= {}
+            for stop in self.controller.generator["Route"][route]["stops"]:
+                self.controller.generator["Route"][route]["stops"][stop]["passenger_rate"] = {}
 
         self.update_side_panel_activity(5)
         self.frame.winfo_children()[1].destroy()
